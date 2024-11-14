@@ -57,13 +57,14 @@ class GroupInvariantKernel(Kernel):
             #print('Transformed kernel shape:', transformed_kernel.shape)
             
             K += transformed_kernel / len(self.group)
-            K += np.eye(X.shape[0]) * 1e-6
+            #K += np.eye(X.shape[0]) * 1e-6
 
             #K += self.kernel(X_transformed, Y) / len(self.group)
         print('k',K.shape)
         # Add jitter only if K is square
-        # if K.shape[0] == K.shape[1]:
-        #     K += np.eye(K.shape[0]) * 1e-6  # Small jitter for stability
+        if K.shape[0] == K.shape[1]:
+            print('yesss jitter')
+            K += np.eye(K.shape[0]) * 1e-6  # Small jitter for stability
 
         
         #K += np.eye(X.shape[0]) * 1e-6
@@ -88,86 +89,7 @@ class GroupInvariantKernel(Kernel):
     def is_stationary(self):
         return True
         #return self.kernel.is_stationary()
-#version with eval grad
-# class GroupInvariantKernel(Kernel):
-#     def __init__(self, base_kernel="Matern", length_scale=0.1, smoothness=1.5, group=None):
-#         self.base_kernel = base_kernel
-#         self.length_scale = length_scale
-#         self.smoothness = smoothness
-#         self.group = group if group is not None else [lambda x: x]  # Identity transformation if no group given
-
-#         # Define the base kernel as Matern or RBF
-#         if self.base_kernel == "Matern":
-#             self.kernel = Matern(length_scale=length_scale, nu=smoothness)
-#         elif self.base_kernel == "RBF":
-#             self.kernel = RBF(length_scale=length_scale)
-
-#     def __call__(self, X, Y=None, eval_gradient=True):
-#         return self.group_invariant_kernel(X, Y, eval_gradient=eval_gradient)
-
-#     def group_invariant_kernel(self, X, Y=None, eval_gradient=True):
-#         if Y is None:
-#             Y = X
-#         X = np.atleast_2d(X)
-#         Y = np.atleast_2d(Y)
-
-#         K = np.zeros((X.shape[0], Y.shape[0]))
-#         if eval_gradient:
-#             # Initialize gradient array with respect to length_scale
-#             K_gradient = np.zeros((X.shape[0], Y.shape[0], 1))  # Only one hyperparameter: length_scale
-
-#         # Loop over all transformations in the group
-#         for g in self.group:
-#             X_transformed = np.array([g(x) for x in X])
-#             if eval_gradient:
-#                 print('yes')
-#                 # Compute the kernel and its gradient
-#                 K_g, K_gradient_g = self.kernel(X_transformed, Y, eval_gradient=True)
-#                 K += K_g / len(self.group)
-#                 # Average the gradient over transformations
-#                 K_gradient[:, :, 0] += K_gradient_g[:, :, 0] / len(self.group)
-#             else:
-#                 # Compute the kernel without gradient
-#                 K += self.kernel(X_transformed, Y) / len(self.group)
-
-#         # # Add jitter for numerical stability if K is square
-#         # if K.shape[0] == K.shape[1]:
-#         #     K += np.eye(K.shape[0]) * 1e-6
-
-#         # Return kernel matrix and gradient if required
-#         if eval_gradient:
-#             return K, K_gradient
-#         else:
-#             return K
-
-#     def diag(self, X):
-#         return np.diag(self.__call__(X))
-
-#     def is_stationary(self):
-#         return True
-
-
-#Define distinct transformations for the state and action spaces
-#State space transformations
-def state_rotation(x):
-    """Rotate (flip) state around midpoint 0.5."""
-    return 1 - x
-
-def state_reflection(x):
-    """Reflect state about midpoint by flipping each side of the midpoint separately."""
-    return np.abs(0.5 - x) + 0.5  # Reflection about x = 0.5
-
-# Action space transformations
-def action_rotation(x):
-    """Rotate (flip) action around midpoint 0.5."""
-    return 1 - x
-
-def action_reflection(x):
-    """Reflect action by translating it with a wrap-around (mod 1)."""
-    return (0.75 - x) % 1  # Wrap-around transformation
-# state_transformations = [lambda x: x, state_rotation]
-# action_transformations = [lambda x: x, action_rotation]
-
+#
 def flip(x):
     return 1 - x
 
@@ -202,7 +124,7 @@ group_SASp = [
 
 # Define the reward_RKHS function with the group-invariant kernel
 def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
-    grid_size = 10  # Grid size for fitting GP regression
+    grid_size = 4  # Grid size for fitting GP regression
 
     # Generate all possible input points in the grid
     values = np.linspace(0, 1, grid_size)
@@ -218,10 +140,10 @@ def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
     # Sample y values from the Gaussian process with the group-invariant kernel
     gp = GaussianProcessRegressor(kernel=kernel)
     #y = np.random.randn(X.shape[0], 1)
-    #y = np.random.randn(X.shape[0])  # Random values (normal distribution)
+    #y = np.random.rand(X.shape[0])  # Random values (normal distribution)
     y = gp.sample_y(X, 1)
     #print('X',X.shape)
-    #print('y',y.shape)
+    print('y',y)
     # Fit the Gaussian Process Regressor
     #print('alpha',alpha)
     gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None, alpha=alpha)
@@ -233,6 +155,7 @@ def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
     print('after fitting')
     
     # Generate all possible input points for prediction (across state-action space)
+    print('length state space',len(state_space))
     values = np.linspace(0, 1, len(state_space))
     all_possible_inputs = np.array(list(product(values, repeat=2)))  # State-action pairs in 2D
 
@@ -240,18 +163,18 @@ def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
     all_predictions, _ = gpr.predict(all_possible_inputs, return_std=True)
     y_pred, _ = gpr.predict(X, return_std=True)
     mse = mean_squared_error(y, y_pred)
-
+    print('y_pred',y_pred)
     # Scale and normalize the predictions
     min_prediction = np.min(all_predictions)
     max_prediction = np.max(all_predictions)
     scaled_predictions = (all_predictions - min_prediction) / (max_prediction - min_prediction)
     r = scaled_predictions.reshape((len(state_space), len(action_space)))
-    print(r)
+    print('r',r)
 
     return r
 
 def transition_P_RKHS(state_space, action_space, P_kernel, alpha=0.5):
-    grid_size = 10  # Grid size for fitting GP regression
+    grid_size = 4  # Grid size for fitting GP regression
     values = np.linspace(0, 1, grid_size)
     X = np.array(list(product(values, repeat=3)))  # 3D points for state-action-next_state
     # if P_kernel == "Matern_smoothness_1.5":

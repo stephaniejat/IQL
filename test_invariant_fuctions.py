@@ -7,7 +7,7 @@ def main():
     state_space = np.linspace(0, 1, num=10).reshape(-1, 1)
     action_space = np.linspace(0, 1, num=10).reshape(-1, 1)
     P_kernel = "RBF"
-    grid_size = 10  # Grid size for fitting GP regression
+    #grid_size = 10 # Grid size for fitting GP regression
     H=10
 
     # Generate all possible input points in the grid (state-action pairs)
