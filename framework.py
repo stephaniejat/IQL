@@ -41,15 +41,12 @@ class GroupInvariantKernel(Kernel):
        # print('Y',Y)
         # Calculate the kernel averaged over the group transformations
         K = np.zeros((X.shape[0], Y.shape[0]))
-         # Loop over all transformations in the group
-       
-        
 
         # # Loop over all transformations in the group
         for g in self.group:
             #print('g',g)
             X_transformed = np.array([g(x) for x in X])
-            print('X_transformed',X_transformed.shape)
+            #print('X_transformed',X_transformed.shape)
             # print('X_transformed values',X_transformed)
             # print('Y',Y.shape)
              # Check if the kernel is producing a valid square matrix for each transformation
@@ -60,11 +57,11 @@ class GroupInvariantKernel(Kernel):
             #K += np.eye(X.shape[0]) * 1e-6
 
             #K += self.kernel(X_transformed, Y) / len(self.group)
-        print('k',K.shape)
+        #print('k',K.shape)
         # Add jitter only if K is square
-        if K.shape[0] == K.shape[1]:
-            print('yesss jitter')
-            K += np.eye(K.shape[0]) * 1e-6  # Small jitter for stability
+        # if K.shape[0] == K.shape[1]:
+        #     print('yesss jitter')
+        #     K += np.eye(K.shape[0]) * 1e-6  # Small jitter for stability
 
         
         #K += np.eye(X.shape[0]) * 1e-6
@@ -90,9 +87,6 @@ class GroupInvariantKernel(Kernel):
         return True
         #return self.kernel.is_stationary()
 #
-def flip(x):
-    return 1 - x
-
 def shift_05(x):
     return (x + 0.5) % 1
 
@@ -101,41 +95,55 @@ def shift_03(x):
 def square(x):
     return x**2
 
+def flip(x):
+    return - x
+
 # # # Define transformation groups for state and action
 
-state_transformations = [lambda x: x, shift_05] 
-action_transformations = [lambda x: x, shift_05]  
+# state_transformations = [lambda x: x, flip] 
+# action_transformations = [lambda x: x, flip]  
 
 
-# Combine state and action transformations for 2D inputs (S x A)
+# # # Combine state and action transformations for 2D inputs (S x A)
+# group_SA = [
+#     lambda x: np.array([g1(x[0]), g2(x[1])]) 
+#     for g1, g2 in product(state_transformations, action_transformations)
+# ]
 group_SA = [
-    lambda x: np.array([g1(x[0]), g2(x[1])]) 
-    for g1, g2 in product(state_transformations, action_transformations)
+    lambda x: np.array([x[0], x[1]]),        # Identity for both state and action
+    lambda x: np.array([flip(x[0]), flip(x[1])])  # Flip for both state and action
 ]
 
-# Combine state, action, and next state transformations for 3D inputs (S x A x S')
+
+# # Combine state, action, and next state transformations for 3D inputs (S x A x S')
+# group_SASp = [
+#     lambda x: np.array([g1(x[0]), g2(x[1]), g3(x[2])]) 
+#     for g1, g2, g3 in product(state_transformations, action_transformations, state_transformations)
+# ]
+
 group_SASp = [
-    lambda x: np.array([g1(x[0]), g2(x[1]), g3(x[2])]) 
-    for g1, g2, g3 in product(state_transformations, action_transformations, state_transformations)
+    lambda x: np.array([x[0],x[1],x[2]]),        # Identity for both state and action
+    lambda x: np.array([flip(x[0]), flip(x[1]), flip(x[2])])  # Flip for both state and action
 ]
-
 
 
 
 # Define the reward_RKHS function with the group-invariant kernel
 def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
-    grid_size = 4  # Grid size for fitting GP regression
+    grid_size = 5  # Grid size for fitting GP regression
 
     # Generate all possible input points in the grid
-    values = np.linspace(0, 1, grid_size)
+    values = np.linspace(-1, 1, grid_size)
     X = np.array(list(product(values, repeat=2)))  # 2D grid points for state-action pairs
 
     # Define the group-invariant kernel based on the P_kernel parameter and group G (state-action transformations)
-    if P_kernel == "Matern":
-        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=0.001, smoothness=1.5, group=group_SA)
-  
+    if P_kernel == "Matern_smoothness_1.5":
+        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=0.1, smoothness=1.5, group=group_SA)
+    elif P_kernel == "Matern_smoothness_2.5":
+        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=0.1, smoothness=2.5, group=group_SA)
+
     elif P_kernel == "RBF":
-        kernel = GroupInvariantKernel(base_kernel="RBF", length_scale=0.001, group=group_SA)
+        kernel = GroupInvariantKernel(base_kernel="RBF", length_scale=0.1, group=group_SA)
 
     # Sample y values from the Gaussian process with the group-invariant kernel
     gp = GaussianProcessRegressor(kernel=kernel)
@@ -143,54 +151,48 @@ def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
     #y = np.random.rand(X.shape[0])  # Random values (normal distribution)
     y = gp.sample_y(X, 1)
     #print('X',X.shape)
-    print('y',y)
+    #print('y',y)
     # Fit the Gaussian Process Regressor
     #print('alpha',alpha)
     gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None, alpha=alpha)
     K = gpr.kernel(X,X)
     eigvals = np.linalg.eigvalsh(K)
-    print("Kernel matrix eigenvalues:", eigvals)
+    #print("Kernel matrix eigenvalues:", eigvals)
 
     gpr.fit(X, y)
-    print('after fitting')
+    #print('after fitting')
     
     # Generate all possible input points for prediction (across state-action space)
-    print('length state space',len(state_space))
-    values = np.linspace(0, 1, len(state_space))
+    #print('length state space',len(state_space))
+    values = np.linspace(-1, 1, len(state_space))
     all_possible_inputs = np.array(list(product(values, repeat=2)))  # State-action pairs in 2D
 
     # Predict for all possible input points
     all_predictions, _ = gpr.predict(all_possible_inputs, return_std=True)
     y_pred, _ = gpr.predict(X, return_std=True)
     mse = mean_squared_error(y, y_pred)
-    print('y_pred',y_pred)
+    #print('y_pred',y_pred)
     # Scale and normalize the predictions
     min_prediction = np.min(all_predictions)
     max_prediction = np.max(all_predictions)
     scaled_predictions = (all_predictions - min_prediction) / (max_prediction - min_prediction)
     r = scaled_predictions.reshape((len(state_space), len(action_space)))
-    print('r',r)
+    #print('r',r)
 
     return r
 
 def transition_P_RKHS(state_space, action_space, P_kernel, alpha=0.5):
-    grid_size = 4  # Grid size for fitting GP regression
-    values = np.linspace(0, 1, grid_size)
+    grid_size = 5  # Grid size for fitting GP regression
+    values = np.linspace(-1, 1, grid_size)
     X = np.array(list(product(values, repeat=3)))  # 3D points for state-action-next_state
-    # if P_kernel == "Matern_smoothness_1.5":
-    #     kernel = Matern(length_scale=0.1, nu=1.5, length_scale_bounds="fixed")
-    # elif P_kernel == "Matern_smoothness_2.5":
-    #     kernel = Matern(length_scale=0.1, nu=2.5, length_scale_bounds="fixed")
-    # elif P_kernel =="RBF":
-    #     kernel = RBF(length_scale=0.1,length_scale_bounds="fixed")
-
-
-    # # Define the group-invariant kernel based on the P_kernel parameter and transformations for 3D inputs
-    if P_kernel == "Matern":
-        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=0.001, smoothness=1.5, group=group_SASp)
    
+    # # Define the group-invariant kernel based on the P_kernel parameter and transformations for 3D inputs
+    if P_kernel == "Matern_smoothness_1.5":
+        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=0.1, smoothness=1.5, group=group_SASp)
+    elif P_kernel == "Matern_smoothness_2.5":
+        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=0.1, smoothness=2.5, group=group_SASp)
     elif P_kernel == "RBF":
-        kernel = GroupInvariantKernel(base_kernel="RBF", length_scale=0.001, group=group_SASp)
+        kernel = GroupInvariantKernel(base_kernel="RBF", length_scale=0.1, group=group_SASp)
 
     # Sample y values from the Gaussian process
     gp = GaussianProcessRegressor(kernel=kernel)
@@ -199,9 +201,10 @@ def transition_P_RKHS(state_space, action_space, P_kernel, alpha=0.5):
     # Fit the Gaussian Process Regressor
     gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None, alpha=alpha)
     gpr.fit(X, y)
+    print('after fitting')
 
     # Generate all possible input points for prediction (state-action-next_state)
-    values = np.linspace(0, 1, len(state_space))
+    values = np.linspace(-1, 1, len(state_space))
     all_possible_inputs = np.array(list(product(values, repeat=3)))  # 3D points for state-action-next_state
 
     # Predict for all possible input points
@@ -243,48 +246,6 @@ def transition_dynamics(current_state, action, transition_P,state_space,action_s
 
     return next_state
    
-
-# def reward_RKHS(P_kernel,state_space,action_space,subdir=None,alpha=0.5):
-#     grid_size = 10 # Grid size for fitting GP regression
-
-#     # Generate all possible input points in the grid with grid size 3
-#     values = np.linspace(0, 1, grid_size)
-#     X = np.array(list(product(values, repeat=2)))
-
-
-#     # Gaussian Process Regression (GPR)
-#     if P_kernel == "Matern_smoothness_1.5":
-#         kernel = Matern(length_scale=0.1, nu=1.5, length_scale_bounds="fixed")
-#     elif P_kernel == "Matern_smoothness_2.5":
-#         kernel = Matern(length_scale=0.1, nu=2.5, length_scale_bounds="fixed")
-#     elif P_kernel =="RBF":
-#         kernel = RBF(length_scale=0.1,length_scale_bounds="fixed")
-
-#     gp = GaussianProcessRegressor(kernel=kernel)
-#     y = gp.sample_y(X, 1)
-
-#     gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None,alpha=alpha)
-#     gpr.fit(X, y)
-
-#     # Generate all possible input points in the grid 
-#     values = np.linspace(0, 1, len(state_space))
-#     all_possible_inputs = np.array(list(product(values, repeat=2)))
-
-#     # Predict for all possible input points
-#     all_predictions, _ = gpr.predict(all_possible_inputs, return_std=True)
-#     y_pred, _=gpr.predict(X,return_std=True)
-#     mse = mean_squared_error(y,y_pred)
-
-#     # Scale up and normalize the predictions
-#     min_prediction = np.min(all_predictions)
-#     max_prediction = np.max(all_predictions)
-#     scaled_predictions = (all_predictions - min_prediction) / (max_prediction - min_prediction)
-#     r = scaled_predictions.reshape((len(state_space), len(action_space)))
-#     #plot_reward_gp_3d(r, state_space, action_space,mse, subdir,X,y)
-
-#     return r
-
-
 
 # Value iteration algorithm
 def value_iteration_episodic(state_space, action_space, r, P, H=10):
@@ -342,11 +303,11 @@ def plot_reward_gp_3d(r, state_space, action_space, save_dir=None):
 def plot_transition_probabilities(P, state_space,action_space, save_dir=None):
 
     # Choose state and action indices
-    state_indices = [0, 50, 99]  # Indices of states in state_space
-    action_indices = [0, 50, 99]  # Indices of actions in action_space
-
+    # state_indices = [0, 50, 99]  # Indices of states in state_space
+    # action_indices = [0, 50, 99]  # Indices of actions in action_space
     
-
+    state_indices = [0, 5, 9]  # Indices of states in state_space
+    action_indices = [0, 5, 9]  # Indices of actions in action_space
 
 # Plot transition probabilities for each (s, a) pair
     for state_idx in state_indices:
