@@ -120,6 +120,7 @@ class Kernel:
 
     def compute(x,y) -> float: #TODO: reimplement / rename / redefine types to suit whatever backend we're using. Typing should be consistent
         pass
+        
 
 class GPRegressor:
     """
