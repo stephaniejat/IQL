@@ -11,8 +11,8 @@ from gpytorch.means import ZeroMean
 from gpytorch.kernels import MaternKernel, RBFKernel
 from gpytorch.likelihoods import GaussianLikelihood
 from gpytorch.mlls import ExactMarginalLogLikelihood
-from botorch.models import SingleTaskGP
-from botorch.fit import fit_gpytorch_mll
+#from botorch.models import SingleTaskGP
+#from botorch.fit import fit_gpytorch_mll
 
 
 class InvariantKernel(gpytorch.kernels.Kernel):
@@ -60,6 +60,7 @@ class InvariantKernel(gpytorch.kernels.Kernel):
         
         x1_orbits = self.transformations(x1)  # Shape is ... x G x N x d
         print('x1_orbits',x1_orbits)
+        print('x1_orbits shape',x1_orbits.shape)
         G = x1_orbits.shape[-3]
         if self.is_isotropic:
             # Sum is over a single set of orbits
@@ -100,6 +101,7 @@ class InvariantKernel(gpytorch.kernels.Kernel):
             # Compute the kernel between each pair of expanded orbits = all combinations of orbits
             K_orbits = self.base_kernel.forward(x1_orbits_expanded, x2_orbits_expanded)
             K = torch.mean(K_orbits, dim=-3)
+        print('kernel',K)
 
         if diag:
             return K.diag()
@@ -121,102 +123,148 @@ def permutation_group(x: torch.Tensor) -> torch.tensor:
     #print('return',permuted_x.permute(*dim_indices).shape)
     return permuted_x.permute(*dim_indices)
 
-def compute_manual_kernel_matrix(k, x, y, transformations):
+def compute_manual_isotropic_kernel_matrix(k, x, y, transformations):
+
     N = x.shape[0]
     M = y.shape[0]
+    # Get the number of transformations by applying them to `x`
     G = transformations(x).shape[-3]
     manual_k_G_matrix = torch.zeros(N, M)
-    print('x',x)
-    print('y',y)
- 
+
     for i in range(N):
         for j in range(M):
-            print('x[i].unsqueeze(0)',x[i].unsqueeze(0))
-            # Get all permutations of x[i] and y[j]
-            # These are tensors of shape (G, d)
+            # Apply all transformations to x[i], resulting in (G, d)
             Gx_i = transformations(x[i].unsqueeze(0)).squeeze()
-            print(transformations(x[i].unsqueeze(0)).shape)
-            print('Gx_i',Gx_i.shape)
-            Gy_j = transformations(y[j].unsqueeze(0)).squeeze()
-            print('Gy_i',Gy_j)
-            # Compute the kernel for all pairs of permutations
-            for x_perm in Gx_i:
-                for y_perm in Gy_j:
-                    print('x_perm.unsqueeze(0)',x_perm.unsqueeze(0))
-                    manual_k_G_matrix[i, j] += (
-                        k(x_perm.unsqueeze(0), y_perm.unsqueeze(0)).to_dense().item()
-                    )
-    manual_k_G_matrix /= G**2
+
+            # Sum the kernel evaluations over all transformed versions of x[i] and y[j]
+            for x_transformed in Gx_i:
+                manual_k_G_matrix[i, j] += k(x_transformed.unsqueeze(0), y[j].unsqueeze(0)).to_dense().item()
+
+            # Average over all transformations for isotropic kernel
+            manual_k_G_matrix[i, j] /= G
+    print('manual_k_G_matrix',manual_k_G_matrix)
     return manual_k_G_matrix
 
-def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
-    grid_size = 10  # Grid size for fitting GP regression
+# Shift transformation functions for state or action
+def shift_05(x: torch.Tensor) -> torch.Tensor:
+    return (x + 0.5) % 1
+def flip(x:torch.Tensor) -> torch.Tensor:
+    return -x
+# Identity transformation (no change)
+identity = lambda x: x
 
-    # Generate all possible input points in the grid
-    values = np.linspace(0, 1, grid_size)
-    X = np.array(list(product(values, repeat=2)))  # 2D grid points for state-action pairs
+# Define state and action transformations
+state_transformations = [identity, flip]
+action_transformations = [identity, flip]
+# Define transformation groups for 2D (S x A) state-action pairs
+def group_SA(x: torch.Tensor) -> torch.Tensor:
+    """
+    Apply all combinations of transformations for 2D state-action pairs.
+    x: A torch.Tensor of shape (batch_size, 2), where the last dimension is [state, action].
+    """
+    # Ensure input x has shape (batch_size, 2)
+    assert x.shape[-1] == 2, "Input must have shape (..., 2) for state-action pairs."
 
-    # Define the group-invariant kernel based on the P_kernel parameter and group G (state-action transformations)
-    if P_kernel == "Matern":
-        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=0.001, smoothness=1.5, group=group_SA)
-  
-    elif P_kernel == "RBF":
-        kernel = GroupInvariantKernel(base_kernel="RBF", length_scale=0.001, group=group_SA)
+    # Apply each combination of state and action transformations
+    transformed_pairs = []
+    for g1, g2 in itertools.product(state_transformations, action_transformations):
+        # Apply transformations g1 on the state part (x[..., 0]) and g2 on the action part (x[..., 1])
+        transformed_pair = torch.stack([g1(x[..., 0]), g2(x[..., 1])], dim=-1)
+        transformed_pairs.append(transformed_pair)
 
-    # Sample y values from the Gaussian process with the group-invariant kernel
-    gp = GaussianProcessRegressor(kernel=kernel)
-    #y = np.random.randn(X.shape[0], 1)
-    #y = np.random.randn(X.shape[0])  # Random values (normal distribution)
-    y = gp.sample_y(X, 1)
-    #print('X',X.shape)
-    #print('y',y.shape)
-    # Fit the Gaussian Process Regressor
-    #print('alpha',alpha)
-    gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None, alpha=alpha)
-    K = gpr.kernel(X,X)
-    eigvals = np.linalg.eigvalsh(K)
-    print("Kernel matrix eigenvalues:", eigvals)
+    # Stack along a new dimension to represent the group
+    transformed_tensor = torch.stack(transformed_pairs, dim=0)  # Shape (|G|, batch_size, 2) where |G|=4
+    return transformed_tensor
 
-    gpr.fit(X, y)
-    print('after fitting')
+def is_positive_definite(kernel_matrix: torch.Tensor) -> bool:
+    """
+    Check if a kernel matrix is positive definite by examining its eigenvalues.
+    Args:
+        kernel_matrix (torch.Tensor): The kernel matrix (should be symmetric).
+    Returns:
+        bool: True if the matrix is positive definite, False otherwise.
+    """
+    # Ensure the matrix is symmetric
+    if not torch.allclose(kernel_matrix, kernel_matrix.T, atol=1e-5):
+        print("Matrix is not symmetric!")
+       
+
+    # Compute eigenvalues
+    eigenvalues = torch.linalg.eigvalsh(kernel_matrix)
+    print("Eigenvalues:", eigenvalues)
+
+    # Check if all eigenvalues are greater than zero
+    return torch.all(eigenvalues > 0)
+
+def main():
+   
+    # n_datapoints = 10
+    # dimension = 2
+     
+    # k = ScaleKernel(MaternKernel(nu=2.5))
+    # torch.manual_seed(0)
+
+    # x = torch.rand([n_datapoints, dimension])
+    # # y = torch.rand([n_datapoints, dimension])
+
+    # k_G = InvariantKernel(
+    #         base_kernel=k,
+    #         transformations= group_SA,
+    #         is_isotropic=True,
+    #         is_group=True,
+    #     )
+
+    # manual_k_G_matrix = compute_manual_isotropic_kernel_matrix(k, x, x, group_SA)
+    # print('Manual kernel',manual_k_G_matrix)
+    # k_G_matrix = k_G(x, x).to_dense()
+    # print('Theo invariant kernel',k_G_matrix)
+
+    # assert torch.allclose(k_G_matrix, manual_k_G_matrix, atol=1e-5)
+    # if is_positive_definite(manual_k_G_matrix):
+    #     print("The kernel matrix is positive definite.")
+    # else:
+    #     print("The kernel matrix is NOT positive definite.")
+
+    n_datapoints = 10
+    dimension = 2
+     
+    k = ScaleKernel(MaternKernel(nu=2.5))
+    torch.manual_seed(0)
+
+    # Generate state and action spaces
+    state_space = np.linspace(-1, 1, num=10)
+    action_space = np.linspace(-1, 1, num=10)
+
+    # Create all combinations of state-action pairs
+    SA = np.array(list(product(state_space, action_space)))
+    # Convert to PyTorch tensor
+    SA_tensor = torch.tensor(SA, dtype=torch.float32)
+    print('SA tensor',SA_tensor)
+    print('SA tensor',SA_tensor.shape)
+    x=SA_tensor
+
+
+    k_G = InvariantKernel(
+            base_kernel=k,
+            transformations= group_SA,
+            is_isotropic=True,
+            is_group=True,
+        )
+
+    manual_k_G_matrix = compute_manual_isotropic_kernel_matrix(k, x, x, group_SA)
+    print('Manual kernel',manual_k_G_matrix)
+    k_G_matrix = k_G(x, x).to_dense()
+    print('Theo invariant kernel',k_G_matrix)
+
+    assert torch.allclose(k_G_matrix, manual_k_G_matrix, atol=1e-5)
+    if is_positive_definite(manual_k_G_matrix):
+        print("The kernel matrix is positive definite.")
+    else:
+        print("The kernel matrix is NOT positive definite.")
+
+
     
-    # Generate all possible input points for prediction (across state-action space)
-    values = np.linspace(0, 1, len(state_space))
-    all_possible_inputs = np.array(list(product(values, repeat=2)))  # State-action pairs in 2D
+    
 
-    # Predict for all possible input points
-    all_predictions, _ = gpr.predict(all_possible_inputs, return_std=True)
-    y_pred, _ = gpr.predict(X, return_std=True)
-    mse = mean_squared_error(y, y_pred)
-
-    # Scale and normalize the predictions
-    min_prediction = np.min(all_predictions)
-    max_prediction = np.max(all_predictions)
-    scaled_predictions = (all_predictions - min_prediction) / (max_prediction - min_prediction)
-    r = scaled_predictions.reshape((len(state_space), len(action_space)))
-    print(r)
-
-    return r
-
-#x= torch.tensor([[1,2,3]])
-#x = torch.tensor([[1, 2, 3], [4, 5, 6]])
-# x = torch.tensor([[[1, 2, 3]], [[4, 5, 6]]])
-
-# x_permuted= permutation_group(x)
-# xp= torch.rand([10, 2])
-# print(xp.shape)
-n_datapoints = 10
-dimension = 3
-k = ScaleKernel(MaternKernel(nu=2.5))
-torch.manual_seed(0)
-
-x = torch.rand([n_datapoints, dimension])
-y = torch.rand([n_datapoints, dimension])
-k_G = InvariantKernel(
-        base_kernel=k,
-        transformations=permutation_group,
-        is_isotropic=True,
-        is_group=True,
-    )
-#manual_k_G_matrix = compute_manual_kernel_matrix(k, x, y, permutation_group)
-k_G_matrix = k_G(x, y).to_dense()
+if __name__ == "__main__":
+    main()

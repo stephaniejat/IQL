@@ -247,15 +247,15 @@ def pi_krvi_policy(M, T, state_space, action_space,state_action_space, optimal_V
         ##print('all_rewards',all_rewards)
         # At the end of the function, inside the loop where episodes are being iterated
         
-        if episode == T - 1:  # Check if it's the last episode
-            # Convert Qt_estimate to a table format
-            table_data = []
-            for h in range(H):
-                for i, state in enumerate(state_space):
-                    for j, action in enumerate(action_space):
-                        table_data.append([h, state, action, Qt_estimate[h][i][j]])
-            # Log the table
-            wandb.log({"Qt_estimate_table": wandb.Table(data=table_data, columns=["Step", "State", "Action", "Q_estimate"])})
+        # if episode == T - 1:  # Check if it's the last episode
+        #     # Convert Qt_estimate to a table format
+        #     table_data = []
+        #     for h in range(H):
+        #         for i, state in enumerate(state_space):
+        #             for j, action in enumerate(action_space):
+        #                 table_data.append([h, state, action, Qt_estimate[h][i][j]])
+        #     # Log the table
+        #     wandb.log({"Qt_estimate_table": wandb.Table(data=table_data, columns=["Step", "State", "Action", "Q_estimate"])})
 
     plt.plot(optimal_V)
     plt.ylabel("optimal value function")

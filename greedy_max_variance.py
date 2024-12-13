@@ -5,19 +5,25 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, Matern
 from scipy.stats import truncnorm
 import wandb
-from framework import transition_dynamics
+from framework import transition_dynamics, GroupInvariantKernel
 
-
+def flip(x):
+    return - x
+group_SA = [
+    lambda x: np.array([x[0], x[1]]),        # Identity for both state and action
+    lambda x: np.array([flip(x[0]), flip(x[1])])  # Flip for both state and action
+]
 
 # Function for GP regression to estimate Q-values using RBF kernel
 def GP_regression(X, y, state_action_space,P_kernel,l=0.1,alpha=0.5):
     tau=alpha
     if P_kernel == "Matern_smoothness_1.5":
-        kernel = Matern(length_scale=l, nu=1.5, length_scale_bounds="fixed")
+        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=l, smoothness=1.5, group=group_SA)
     elif P_kernel == "Matern_smoothness_2.5":
-        kernel = Matern(length_scale=l, nu=2.5, length_scale_bounds="fixed")
-    elif P_kernel =="RBF":
-        kernel = RBF(length_scale=l,length_scale_bounds="fixed")
+        kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=l, smoothness=2.5, group=group_SA)
+
+    elif P_kernel == "RBF":
+        kernel = GroupInvariantKernel(base_kernel="RBF", length_scale=l, group=group_SA)
         tau= 0.01
     # Define the RBF kernel
 
@@ -29,11 +35,9 @@ def GP_regression(X, y, state_action_space,P_kernel,l=0.1,alpha=0.5):
     # Fit the model
     gpr.fit(X, y)
     # Predict mean and standard deviation
-    y_pred_mean, y_pred_std = gpr.predict(state_action_space, return_std=True)
+    y_pred_mean, y_pred_std = gpr.predict(state_action_space, return_std=True)  # We should not evaluate at discrete state-action space, return gpr
     
     return y_pred_mean, y_pred_std
-
-
 
 
 
@@ -80,17 +84,17 @@ def exploration_phase(P_kernel,M, T, state_space, action_space,state_action_spac
                     Vnext.append(0)  # Set Y to 0
                 y = np.array([Vnext[i] for i in range(len(Vnext))])
               
-                ft_mean[h], ft_std[h] = GP_regression(X, y, state_action_space,P_kernel)
-                ft_std_reshaped = ft_std[h].reshape((len(state_space), len(action_space)))
+                ft_mean[h], ft_std[h] = GP_regression(X, y, state_action_space,P_kernel)   #change for continuous and return functions
+                ft_std_reshaped = ft_std[h].reshape((len(state_space), len(action_space))) #change for continuous 
                 ucb_bonus[h]=np.minimum(ft_std_reshaped,H)
-                Qt_estimate[h]= np.minimum(np.maximum(ucb_bonus[h], 0), H)
+                Qt_estimate[h]= np.minimum(np.maximum(ucb_bonus[h], 0), H) #change   #leave Qt_estimate as function sigma(s,a) and max over a at a particular s later
           
         # Initialize arrays to store observations for the current episode
         episode_states = []
         episode_actions = []
         episode_rewards = []
 
-        initial_state_index = 20
+        initial_state_index = 2
         #initial_state_index = np.random.randint(len(state_space))
         state = state_space[initial_state_index]  # Initial state  0.2
     
@@ -98,7 +102,7 @@ def exploration_phase(P_kernel,M, T, state_space, action_space,state_action_spac
         for h in range(H):
             # Choose action greedily based on Q-values
             state_index = np.argmin(np.abs(state_space - state))  # Find index of the current state
-            q_values=Qt_estimate[h][state_index]  # Get optimistic Q-values for current state
+            q_values=Qt_estimate[h][state_index]  # Get optimistic Q-values for current state 
             action_index = np.argmax(q_values)  # Find index of action with highest Q-value (greedy policy)
             action = action_space[action_index]  # Choose action with highest Q-value
             next_state = transition_dynamics(state, action,P,state_space,action_space)
@@ -122,13 +126,13 @@ def planning_phase(P_kernel,M, all_states,all_actions, state_space, action_space
 
 # These arrays store the rewards over all episodes
 
-    ft_mean = np.zeros((H+1, len(state_action_space)))
-    ft_std = np.zeros((H+1, len(state_action_space)))
-    ft_estimate = np.zeros((H+1, len(state_space), len(action_space)))
+    ft_mean = np.zeros((H+1, len(state_action_space))) #change; keep as function
+    ft_std = np.zeros((H+1, len(state_action_space))) #change; keep as function
+    ft_estimate = np.zeros((H+1, len(state_space), len(action_space))) #change; keep as function
 
-    ucb_bonus = np.zeros((H+1, len(state_space), len(action_space)))
-    Qt_estimate = np.zeros((H+1, len(state_space), len(action_space)))
-    reward = np.zeros((H, len(state_space), len(action_space)))
+    ucb_bonus = np.zeros((H+1, len(state_space), len(action_space))) #change; keep as function
+    Qt_estimate = np.zeros((H+1, len(state_space), len(action_space))) #change; keep as function
+    reward = np.zeros((H, len(state_space), len(action_space))) #change; keep as function
 
     for h in reversed(range(H)):
         X_states = np.concatenate([all_states[i][h] for i in range(len(all_states))])
@@ -153,10 +157,10 @@ def planning_phase(P_kernel,M, all_states,all_actions, state_space, action_space
         y = np.array([Vnext[i] for i in range(len(Vnext))])
        
         ft_mean[h], ft_std[h] = GP_regression(X, y, state_action_space,P_kernel)
-        ft_mean_reshaped = ft_mean[h].reshape((len(state_space), len(action_space)))
-        ft_std_reshaped = ft_std[h].reshape((len(state_space), len(action_space)))
-        ft_estimate[h] = ft_mean_reshaped 
-        temp_reward = np.zeros_like(ft_mean_reshaped)  # Initialize reward array
+        ft_mean_reshaped = ft_mean[h].reshape((len(state_space), len(action_space))) #change; keep as function
+        ft_std_reshaped = ft_std[h].reshape((len(state_space), len(action_space))) #change; keep as function
+        ft_estimate[h] = ft_mean_reshaped  #change; keep as function
+        temp_reward = np.zeros_like(ft_mean_reshaped)  # Initialize reward array #change; keep as function
 
         for i, state in enumerate(state_space):
             for j, action in enumerate(action_space):
@@ -176,7 +180,7 @@ def planning_phase(P_kernel,M, all_states,all_actions, state_space, action_space
         episode_actions = []
         episode_rewards = []
 
-        initial_state_index=20
+        initial_state_index = 2
         #initial_state_index = np.random.randint(len(state_space))
         state = state_space[initial_state_index]  # Initial state
 
@@ -200,7 +204,7 @@ def planning_phase(P_kernel,M, all_states,all_actions, state_space, action_space
 
 
         episode_cum_rewards = np.sum(episode_rewards)  
-        episode_regret = optimal_V[initial_state_index]- episode_cum_rewards # regret= V* - V(pi)
+        episode_regret = optimal_V[initial_state_index]- episode_cum_rewards # regret= V* - V(pi) #change; handle V* for continuous state spaces
         episode_regrets.append(episode_regret)
         episode_cumulative_rewards.append(episode_cum_rewards)
 

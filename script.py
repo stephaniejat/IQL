@@ -19,7 +19,7 @@ def main():
     H = 10  # Length of each episode
 
     P_kernel= 'RBF'
-    alpha=0.01
+    alpha=0.001
      # Define save directory
     #save_dir = f'Rewards_and_P_invariant_NEW'
     #subdir = os.path.join(save_dir, P_kernel)
@@ -34,15 +34,22 @@ def main():
         save_rewards_and_transitions(P_kernel, alpha, save_dir)
     
     P, r, optimal_value_function = load_saved_data(subdir)
+    # print('P',P)
+    # print('P.shape',P.shape)
+    # print('r',r)
+    # print('r.shape',r.shape)
+    # print('optimal_value_function',optimal_value_function)
+    # print('optimal_value_function_shape',optimal_value_function.shape)
+
     
 
     # Define environment M = (S,A,H,P,r)
     M = (S, A, H, P, r)
 
     # Run experiments with p-KRVI policy
-    T = 2000 # Number of episodes # it was 1000
-    beta=0.5 # UCB coefficient
-    NUM_RUNS=10
+    T = 1000 # Number of episodes 
+    beta=0.001 # UCB coefficient
+    NUM_RUNS=10 
     #wandb.init(project="kernelized_RL")
 
 

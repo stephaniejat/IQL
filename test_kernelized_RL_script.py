@@ -9,9 +9,9 @@ def main():
     action_space = np.linspace(0, 1, num=100).reshape(-1, 1)
 
     P=transition_P(state_space,action_space)
-    print('P',P)
+    #print('P',P)
     optimal_value_function = value_iteration_episodic(state_space,action_space,reward_function,P,10)
-    print('optimal_value_function',optimal_value_function)
+    #print('optimal_value_function',optimal_value_function)
      #Define state and action spaces and their combination
     state_action_space = []
     for state in state_space:
@@ -25,11 +25,19 @@ def main():
     H = 10  # Length of each episode
     r = reward_function  # Not used in this example
 
+    print('P',P)
+    print('P.shape',P.shape)
+    print('r',r)
+    print('r.shape',r.shape)
+    print('optimal_value_function',optimal_value_function)
+    print('optimal_value_function_shape',optimal_value_function.shape)
+    
+
     # Define environment M = (S,A,H,P,r)
     M = (S, A, H, P, r)
 
     # Run experiments with p-KRVI policy
-    T = 1000 # Number of episodes
+    T = 200 # Number of episodes (it was 1000)
     beta=0.1 # UCB coefficient
     NUM_RUNS=1
     #wandb.init(project="kernelized_RL")
@@ -40,7 +48,7 @@ def main():
     #,name=f"run_{run}"
     for run in range(NUM_RUNS):
         # Start a new run for each iteration
-        wandb.init(project="test", reinit=True)
+        wandb.init(project="IQL", reinit=True)
         test_kernelized_RL.pi_krvi_policy(M, T, state_space, action_space,state_action_space,optimal_value_function, beta)
         # Log metrics specific to this run
         wandb.log({"run": run})

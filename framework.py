@@ -15,7 +15,7 @@ from itertools import product
 
 # #kernel implementation from Scikit learn
 class GroupInvariantKernel(Kernel):
-    def __init__(self, base_kernel="Matern", length_scale=0.001, smoothness=1.5, group=None):
+    def __init__(self, base_kernel="Matern", length_scale=0.1, smoothness=1.5, group=None):
         self.base_kernel = base_kernel
         self.length_scale = length_scale
         self.smoothness = smoothness

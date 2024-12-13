@@ -16,23 +16,24 @@ group_SA = [
 ]
 
 # Function for GP regression to estimate Q-values using RBF kernel
-def GP_regression(X, y, state_action_space,P_kernel='RBF',l=0.1,alpha=0.5):
-    tau=alpha
+def GP_regression_invariant(X, y, state_action_space,P_kernel='RBF',l=1,alpha=1e-10):
+    
     if P_kernel == "Matern_smoothness_1.5":
         kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=l, smoothness=1.5, group=group_SA)
     elif P_kernel == "Matern_smoothness_2.5":
         kernel = GroupInvariantKernel(base_kernel="Matern", length_scale=l, smoothness=2.5, group=group_SA)
 
     elif P_kernel == "RBF":
+        #print('length_scale',l)
         kernel = GroupInvariantKernel(base_kernel="RBF", length_scale=l, group=group_SA)
-        tau= 0.01
+      
     # Define the RBF kernel
 
     wandb.run.summary["kernel type"] = kernel
-    wandb.run.summary["alpha_gp"] = tau
+    wandb.run.summary["alpha_gp"] = alpha
     wandb.run.summary["length_scale"] = l
     # Create GPR model
-    gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None,alpha=tau) 
+    gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None,alpha=alpha) 
     # Fit the model
     gpr.fit(X, y)
     # Predict mean and standard deviation
@@ -42,15 +43,17 @@ def GP_regression(X, y, state_action_space,P_kernel='RBF',l=0.1,alpha=0.5):
 
 
 # Function for GP regression to estimate Q-values using RBF kernel
-def GP_regression_with_RBF(X, y, state_action_space,l=0.1,alpha=0.5):
+def GP_regression_with_RBF(X, y, state_action_space,l=1,alpha=1e-10):
     # Define the RBF kernel
     kernel = RBF(length_scale=l,length_scale_bounds="fixed")
-    tau=0.01
+    
+    #tau=0.01
     wandb.run.summary["kernel type"] = kernel
-    wandb.run.summary["alpha_gp"] = tau
+    wandb.run.summary["alpha_gp"] = alpha
     wandb.run.summary["length_scale"] = l
     # Create GPR model
-    gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None,alpha=tau) #using default alpha 1e-10 and disabling kernel parameters optimization
+    #gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None) #correct
+    gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None,alpha=alpha) # disabling kernel parameters optimization
     # Fit the model
     gpr.fit(X, y)
     # Predict mean and standard deviation
@@ -120,7 +123,7 @@ def pi_krvi_policy(M, T, state_space, action_space,state_action_space, optimal_V
         
                 # Concatenate X_states and X_actions along axis 1
                 X = np.concatenate((X_states, X_actions), axis=1)
-                print('X',X)
+                #print('X',X)
                 ###print('concatinated rewards',np.concatenate([np.array(all_rewards[i][h]) for i in range(episode)]))
                 
                 Qnext = []
@@ -134,10 +137,10 @@ def pi_krvi_policy(M, T, state_space, action_space,state_action_space, optimal_V
                         Qnext.append(0)  # Set Qnext to 0 if we are at the last step
                 ###print('Qnext',Qnext)
                 # Concatenate rewards and Qnext along axis 0 and add them element-wise
-                print('all_rewards',all_rewards)
-                print('Qnext',Qnext)
+                #print('all_rewards',all_rewards)
+                #print('Qnext',Qnext)
                 y = np.array([all_rewards[i][h] + Qnext[i] for i in range(len(Qnext))])
-                print('y',y)
+                #print('y',y)
                 #y = np.concatenate([np.array(all_rewards[i][h]) + Qnext[i] for i in range(len(Qnext))])
                 ###print('y',y)
                 Qt_mean[h], Qt_std[h] = GP_regression_with_RBF(X, y, state_action_space)
@@ -186,10 +189,10 @@ def pi_krvi_policy(M, T, state_space, action_space,state_action_space, optimal_V
         #cum_rewards.append( episode_cum_rewards)
         ##print('episode_states',episode_states)
         all_states.append(np.array(episode_states))
-        print('all_states',all_states)
+        #print('all_states',all_states)
         ##print('episode_actions',episode_actions)
         all_actions.append(np.array(episode_actions))
-        print('all_actions',all_actions)
+        #print('all_actions',all_actions)
         ##print('episode_rewards',episode_rewards)
         all_rewards.append(np.array(episode_rewards))
         ##print('all_rewards',all_rewards)
