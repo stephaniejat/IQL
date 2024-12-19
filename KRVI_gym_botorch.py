@@ -13,6 +13,7 @@ from botorch.models import SingleTaskGP
 from botorch.fit import fit_gpytorch_mll
 import gpytorch
 from botorch.models.transforms.outcome import Standardize
+from gpytorch.kernels import ScaleKernel, RBFKernel
 
 
 
@@ -78,14 +79,10 @@ class KRVI:
         #self.env = FullyObsWrapper(self.env) #specific to minigrid
         print('state space',self.env.observation_space)
         #print('state space after wrapping',self.env.observation_space['image'].sample())
-
         #state_space = np.arange(self.env.observation_space.n)  # Assuming discrete observation space
         print('action space', self.env.action_space)
         action_space = np.arange(self.env.action_space.n)      # Assuming discrete action space
         #print('action space after',action_space)
-        #state_action_space = [(s, a) for s in state_space for a in action_space]
-
-        #optimal_V = np.zeros(len(state_space))  # Placeholder for optimal value function for continuous state
 
         # Log hyperparameters
         if self.logging:
@@ -99,9 +96,6 @@ class KRVI:
         all_rewards = []
         Qt= [None] * (self.horizon + 1)
 
-        #Qt = np.zeros((self.horizon, len(state_action_space)))
-        #Qt_std = np.zeros((self.horizon, len(state_action_space)))
-        #Qt_estimate = np.zeros((self.horizon + 1, len(state_space), len(action_space)))
 
         for episode in range(T):
             if self.verbose > 0:
@@ -118,41 +112,23 @@ class KRVI:
 
             # Update Q-values from previous episodes
             if episode > 0:
-                #print('episode',episode)
+                
                 for h in reversed(range(self.horizon)):
                     print('h',h)
-                   
-                    if episode == 1:
-                        # If it's the first episode, initialize X_states and X_actions directly
-                        X_states = np.array([all_states[0][h]])  # Use np.array to create a 1D array
-                        X_actions = np.array([all_actions[0][h]])  # Likewise for actions
-                    else:
-                        # For subsequent episodes, concatenate as usual
-                        X_states = np.concatenate([np.array([all_states[i][h]]) for i in range(episode)])
+                
+                    X_states = np.concatenate([np.array([all_states[i][h]]) for i in range(episode)])
 
-                        X_actions = np.concatenate([np.array([all_actions[i][h]]) for i in range(episode)])
-                    #X_states = np.concatenate([all_states[i][h] for i in range(episode)])
-                    #X_actions = np.concatenate([all_actions[i][h] for i in range(episode)])
+                    X_actions = np.concatenate([np.array([all_actions[i][h]]) for i in range(episode)])
+                   
                     X = np.column_stack((X_states, X_actions))
                     print('X stacked numpy',X)
-                    #X_torch = torch.tensor(X, dtype=torch.float64)
-                    #print('X torch',X_torch)
-
                     
-
-                    #X_states = X_states.reshape(-1, 1)
-                    #X_actions = X_actions.reshape(-1, 1)
-
-                    #X = np.concatenate((X_states, X_actions), axis=1)
-                   
-
                     Qnext = []
 
                     if h < self.horizon - 1:
                         # Collect all next states at step h+1 for all episodes
                         next_states_batch = np.array([all_states[i][h + 1] for i in range(episode)])
                         print('next_states_batch', next_states_batch)
-
                         # Expand batch for all actions
                         batch_size = next_states_batch.shape[0] #which is the number of episodes so far
                         print('batch size',batch_size)
@@ -175,37 +151,11 @@ class KRVI:
                         Qnext.extend([0] * episode)
                     print('Qnext',Qnext)
 
-                    # for i in range(episode):
-                    #     if h < self.horizon - 1:
-                    #         next_state = all_states[i][h + 1]
-                    #         print('next_state',next_state)
-                           
-                    #         next_q_values = []
-                    #         for a in action_space:
-                    #             # Use the prediction method to calculate mean + beta * std_dev
-                    #             model = Qt[h + 1]
-                    #             q_value = self.predict_with_gp(model, next_state, a)
-                    #             next_q_values.append(q_value)
-
-                    #         # Take the maximum Q-value over all actions
-                    #         Qnext.append(max(next_q_values))                      
-            
-                    #     else:
-                    #         Qnext.append(0)
-
                     y = np.array([all_rewards[i][h] + Qnext[i] for i in range(len(Qnext))])
-                      # Convert targets to tensor
-                    #y_torch = torch.tensor(y, dtype=torch.float64)
-                   
-
-                    #print('y_torch',y_torch)
+                    
                           # Perform GP regression using PyTorch
                     Qt[h] = self.GP_regression_torch(X, y)
                     print('Qt[h]',Qt[h])
-
-                    #Qt[h], Qt_std[h] = self.GP_regression_with_RBF(X, y, state_action_space)
-                   
-                    #Qt_estimate[h] = Qt_reshaped + self.beta * Qt_std_reshaped
 
 
           # Execute episode
@@ -220,10 +170,13 @@ class KRVI:
                 if Qt[h]:  # Ensure a model is available for the current step
                     # Prepare inputs for batched prediction
                     states_batch = np.full(len(action_space), state)  # Repeat current state for all actions
+                    print('current state',states_batch)
                     actions_batch = np.array(action_space)  # Convert action_space to numpy array
+                    print('all actions',actions_batch)
 
                     # Predict Q-values for all actions in a single batch
                     q_values = self.predict_with_gp(Qt[h], states_batch, actions_batch)
+                    print('q values',q_values)
                 else:
                     # Default Q-values if no model is available
                     q_values = np.zeros(len(action_space))
@@ -239,9 +192,6 @@ class KRVI:
                 #q_values = Qt_estimate[h][state_index]  # you should get the estimate from calling gp regression for this state and all actions
                 #action_index = np.argmax(q_values)
 
-               
-                result = self.env.step(action)
-                print('result',result)
                 next_state, reward, done, truncated , info = self.env.step(action)
                 print('state',state)
                 print('next state',next_state)
@@ -297,15 +247,31 @@ class KRVI:
        
 
         #likelihood = gpytorch.likelihoods.GaussianLikelihood()
-        model = SingleTaskGP(train_X=X_scaled,train_Y= y.unsqueeze(-1),outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
-        #model.likelihood.noise_covar.noise = torch.tensor(1e-10)  # Set it to a slightly larger value
-        model.likelihood.noise_covar.register_constraint("raw_noise", gpytorch.constraints.GreaterThan(0.05)) #aya check this and outcome transform
+        model = SingleTaskGP(train_X=X_scaled,train_Y= y.unsqueeze(-1)) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
+      
+        #model.likelihood.noise_covar.register_constraint("raw_noise", gpytorch.constraints.GreaterThan(0.05)) #aya check this and outcome transform
+        # Replace the default kernel (MaternKernel) with RBFKernel
+        model.covar_module = ScaleKernel(
+            RBFKernel()  # Enable ARD for different length scales per dimension
+        )
 
-        #model.likelihood.noise_covar.raw_noise_constraint = GreaterThan(1e-3)
+# Set and freeze the length scale
+        model.covar_module.base_kernel.lengthscale = torch.tensor(
+            [0.8], dtype=torch.float64  
+        )
+        model.covar_module.base_kernel.raw_lengthscale.requires_grad = False
 
+        # Set and freeze the noise
+        model.likelihood.noise = torch.tensor([0.05], dtype=torch.float64)  # Set noise to 0.05
+        model.likelihood.raw_noise.requires_grad = False
 
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(model.likelihood, model)
-        #model.likelihood.noise_covar.noise = torch.tensor(1e-10)
+        print('model.covar_module',model.covar_module)  # Will show ScaleKernel and RBFKernel
+        print('len scale',model.covar_module.base_kernel.lengthscale)  # View current length scale
+
+        # Inspect noise parameter
+        print('noise',model.likelihood.noise)  # Current noise value
+      
         fit_gpytorch_mll(mll)
 
        
@@ -329,11 +295,6 @@ class KRVI:
         print('X combined',X_combined)
         
         
-        # Assuming state_scaled and action_scaled are numpy arrays
-        #X_scaled = torch.tensor(np.array([state_scaled, action_scaled]).reshape(1, -1), dtype=torch.float64)
-       
-        #X_scaled = torch.tensor([[state_scaled, action_scaled]], dtype=torch.float64)
-
         # Make predictions
         model.eval()
         with torch.no_grad():
@@ -388,33 +349,6 @@ class KRVI:
 
         return gpr
 
-    # def scale_state_action(self, states, actions):
-   
-    # # State scaling
-    #     state_low = torch.tensor(self.env.observation_space.low, dtype=states.dtype)
-    #     state_high = torch.tensor(self.env.observation_space.high, dtype=states.dtype)
-    #     state_range = state_high - state_low
-    #     states_scaled = (states - state_low) / state_range
-
-    #     # Action scaling
-    #     if isinstance(self.env.action_space, gym.spaces.Discrete):
-    #         action_low = torch.tensor(0.0, dtype=actions.dtype)
-    #         action_high = torch.tensor(self.env.action_space.n - 1, dtype=actions.dtype)
-    #     else:  # Assume continuous action space
-    #         action_low = torch.tensor(self.env.action_space.low, dtype=actions.dtype)
-    #         action_high = torch.tensor(self.env.action_space.high, dtype=actions.dtype)
-    #     action_range = action_high - action_low
-    #     actions_scaled = (actions - action_low) / action_range
-
-    #     # Combine scaled states and actions
-    #     sa_scaled = torch.cat((states_scaled, actions_scaled), dim=-1)
-    #     return sa_scaled, (state_low, state_high, action_low, action_high)
-
-
-    # def GP_regression_torch(self,X,y):
-    #     model = SingleTaskGP(X,y) #default RBF kernel)
-    #     mll = gpytorch.mlls.ExactMarginalLogLikelihood(model.likelihood, model)
-    #     fit_gpytorch_mll(mll)
  
 # Example usage
 if __name__ == "__main__":
