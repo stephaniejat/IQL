@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Optional, TypeVar, Union, Callable
+from typing import Any, ClassVar, Optional, TypeVar, Union, Callable, Tuple
 
 import numpy as np
 import torch 
@@ -7,12 +7,14 @@ import gymnasium as gym
 import minigrid
 from minigrid.wrappers import FullyObsWrapper, RGBImgObsWrapper
 from gymnasium import spaces
-import wandb
+# import wandb
 import botorch
-from botorch.models import SingleTaskGP
+from botorch.models.gp_regression import SingleTaskGP
 from botorch.fit import fit_gpytorch_mll
 import gpytorch
 from botorch.models.transforms.outcome import Standardize
+from botorch.models.transforms.input import Normalize
+from botorch.utils.transforms import standardize
 from gpytorch.kernels import ScaleKernel, RBFKernel
 
 
@@ -52,7 +54,7 @@ class KRVI:
         horizon: int,
         Q: Optional[Callable] = None,
         V: Optional[Callable] = None,
-        train_freq: Union[int, tuple[int, str]] = (1, "episode"),
+        train_freq: Union[int, Tuple[int, str]] = (1, "episode"),
         logging: Optional[str] = None,
         verbose: int = 0,
         seed: Optional[int] = None,
@@ -70,11 +72,11 @@ class KRVI:
         self.verbose = verbose
         self.seed = seed
       
-        if logging:
+        # if logging:
            
-            wandb.init(project=logging)
+        #     wandb.init(project=logging)
 
-    def train(self, T: int):
+    def train(self, T: int, warm_up:int = 5):
         print('self.env',self.env)
         #self.env = FullyObsWrapper(self.env) #specific to minigrid
         print('state space',self.env.observation_space)
@@ -86,9 +88,10 @@ class KRVI:
 
         # Log hyperparameters
         if self.logging:
-            wandb.run.summary["episode length"] = self.horizon
-            wandb.run.summary["episode number"] = T
-            wandb.run.summary["UCB coef"] = self.beta
+            pass
+            # wandb.run.summary["episode length"] = self.horizon
+            # wandb.run.summary["episode number"] = T
+            # wandb.run.summary["UCB coef"] = self.beta
 
         # Arrays to store episode data
         all_states = []
@@ -111,31 +114,31 @@ class KRVI:
             print('initial state',state)
 
             # Update Q-values from previous episodes
-            if episode > 0:
+            if episode > warm_up:
                 
                 for h in reversed(range(self.horizon)):
-                    print('h',h)
+                    # print('h',h)
                 
                     X_states = np.concatenate([np.array([all_states[i][h]]) for i in range(episode)])
 
                     X_actions = np.concatenate([np.array([all_actions[i][h]]) for i in range(episode)])
                    
                     X = np.column_stack((X_states, X_actions))
-                    print('X stacked numpy',X)
+                    # print('X stacked numpy',X)
                     
                     Qnext = []
 
                     if h < self.horizon - 1:
                         # Collect all next states at step h+1 for all episodes
                         next_states_batch = np.array([all_states[i][h + 1] for i in range(episode)])
-                        print('next_states_batch', next_states_batch)
+                        # print('next_states_batch', next_states_batch)
                         # Expand batch for all actions
                         batch_size = next_states_batch.shape[0] #which is the number of episodes so far
-                        print('batch size',batch_size)
+                        # print('batch size',batch_size)
                         actions_batch = np.tile(action_space, batch_size)  # Repeat action_space for each state
-                        print('actions_batch',actions_batch)
+                        # print('actions_batch',actions_batch)
                         states_expanded = np.repeat(next_states_batch, len(action_space))  # Repeat each state for all actions
-                        print('states_expanded',states_expanded)
+                        # print('states_expanded',states_expanded)
 
                         # Predict Q-values for all (state, action) pairs
                         max_q_values = np.zeros(batch_size)
@@ -149,13 +152,13 @@ class KRVI:
                         Qnext.extend(max_q_values)
                     else:
                         Qnext.extend([0] * episode)
-                    print('Qnext',Qnext)
+                    # print('Qnext',Qnext)
 
                     y = np.array([all_rewards[i][h] + Qnext[i] for i in range(len(Qnext))])
                     
                           # Perform GP regression using PyTorch
                     Qt[h] = self.GP_regression_torch(X, y)
-                    print('Qt[h]',Qt[h])
+                    # print('Qt[h]',Qt[h])
 
 
           # Execute episode
@@ -170,58 +173,71 @@ class KRVI:
                 if Qt[h]:  # Ensure a model is available for the current step
                     # Prepare inputs for batched prediction
                     states_batch = np.full(len(action_space), state)  # Repeat current state for all actions
-                    print('current state',states_batch)
+                    # print('current state',states_batch)
                     actions_batch = np.array(action_space)  # Convert action_space to numpy array
-                    print('all actions',actions_batch)
+                    # print('all actions',actions_batch)
 
                     # Predict Q-values for all actions in a single batch
                     q_values = self.predict_with_gp(Qt[h], states_batch, actions_batch)
-                    print('q values',q_values)
+                    # print('q values',q_values)
                 else:
                     # Default Q-values if no model is available
                     q_values = np.zeros(len(action_space))
 
                 # Select action with the highest Q-value
-                action = action_space[np.argmax(q_values)]
-              
+                if episode > warm_up:
+                    action = action_space[np.argmax(q_values)]
+                else:
+                    action = np.random.choice([0, 1, 2, 3])
+
 
                 #action_index = np.argmax(q_values)
                 #action_index=np.random.randint(0,3)
                 #action = action_space[action_index]
-                print('action',action)
+                # print('action',action)
                 #q_values = Qt_estimate[h][state_index]  # you should get the estimate from calling gp regression for this state and all actions
                 #action_index = np.argmax(q_values)
 
                 next_state, reward, done, truncated , info = self.env.step(action)
-                print('state',state)
-                print('next state',next_state)
+                if done or truncated:
+                    reward -= 0.5
+                
+                    
+                # print('state',state)
+                # print('next state',next_state)
                 episode_states.append(state)
-                print('episode_states',episode_states)
+                # print('episode_states',episode_states)
                 episode_actions.append(action)
                 episode_rewards.append(reward)
 
                 # if done:
                 #     break
                 state = next_state
+                if done or truncated:
+                    break
+                    
             all_states.append(np.array(episode_states))
-            print('all_states',all_states)
+            # print('all_states',all_states)
             all_actions.append(np.array(episode_actions))
-            print('all_actions',all_actions)
+            # print('all_actions',all_actions)
             all_rewards.append(np.array(episode_rewards))
-            print('all_rewards',all_rewards)
+            # print('all_rewards',all_rewards)
 
 
             episode_cum_rewards = np.sum(episode_rewards)
             #initial_state_index = episode_states[0]
             #episode_regret = optimal_V[initial_state_index] - episode_cum_rewards
 
-            if self.logging:
-                metrics = {
-                    "Episode_number": episode,
-                    "Episode_Regret": episode_regret,
-                    "Episode_Rewards": episode_cum_rewards
-                }
-                wandb.log(metrics)
+            # if self.logging:
+            metrics = {
+                "Episode_number": episode,
+                # "Episode_Regret": episode_regret,
+                "Episode actions": all_actions,
+                "Episode states": all_states,
+                "Episode_Rewards": episode_rewards
+            }
+            print(metrics)
+                # wandb.log(metrics)
     
     def GP_regression_torch(self, X, y):
         """
@@ -233,8 +249,11 @@ class KRVI:
         """
          # Ensure inputs are torch tensors and use double precision
         X = torch.tensor(X, dtype=torch.float64)
-        y = torch.tensor(y, dtype=torch.float64)
+        y = torch.tensor(y, dtype=torch.float64).unsqueeze(-1)
+        y_noise = torch.randn_like(y)
+        y = standardize(y +  1e-6 * y_noise)
 
+        # train_Yvar = torch.full_like(y, 1e-8)
         # Extract number of states and actions from the environment
         n_states = self.env.observation_space.n  # Total number of discrete states
         n_actions = self.env.action_space.n     # Total number of discrete actions
@@ -243,18 +262,20 @@ class KRVI:
         states_scaled = X[:, 0] / (n_states - 1)
         actions_scaled = X[:, 1] / (n_actions - 1)
         X_scaled = torch.stack((states_scaled, actions_scaled), dim=1)
-        print('X_scaled',X_scaled)
-       
+        # print('X_scaled',X_scaled)
 
+        # print("Before fit")
+        # input_transform=Normalize(d=2)
         #likelihood = gpytorch.likelihoods.GaussianLikelihood()
-        model = SingleTaskGP(train_X=X_scaled,train_Y= y.unsqueeze(-1)) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
-      
+        model = SingleTaskGP(train_X=X_scaled, train_Y=y) #, outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
+        
+        #  print("After fit")
         #model.likelihood.noise_covar.register_constraint("raw_noise", gpytorch.constraints.GreaterThan(0.05)) #aya check this and outcome transform
         # Replace the default kernel (MaternKernel) with RBFKernel
         model.covar_module = ScaleKernel(
             RBFKernel()  # Enable ARD for different length scales per dimension
         )
-
+        
 # Set and freeze the length scale
         model.covar_module.base_kernel.lengthscale = torch.tensor(
             [0.8], dtype=torch.float64  
@@ -266,14 +287,14 @@ class KRVI:
         model.likelihood.raw_noise.requires_grad = False
 
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(model.likelihood, model)
-        print('model.covar_module',model.covar_module)  # Will show ScaleKernel and RBFKernel
-        print('len scale',model.covar_module.base_kernel.lengthscale)  # View current length scale
+        
+
+        # print('model.covar_module',model.covar_module)  # Will show ScaleKernel and RBFKernel
+        # print('len scale',model.covar_module.base_kernel.lengthscale)  # View current length scale
 
         # Inspect noise parameter
-        print('noise',model.likelihood.noise)  # Current noise value
-      
+        # print('noise',model.likelihood.noise)  # Current noise value
         fit_gpytorch_mll(mll)
-
        
         return model
     
@@ -292,7 +313,7 @@ class KRVI:
         X_combined = torch.tensor(X_combined, dtype=torch.float64)
     
       
-        print('X combined',X_combined)
+        # print('X combined',X_combined)
         
         
         # Make predictions
@@ -301,10 +322,10 @@ class KRVI:
             posterior = model.posterior(X_combined)
             mean = posterior.mean.squeeze(-1).numpy()  # Shape: (batch_size,)
             std_dev = posterior.variance.sqrt().squeeze(-1).numpy()  # Shape: (batch_size,)
-
+            print(std_dev)
         # Compute mean + beta * std_dev for each batch element
         acquisition_values = mean + self.beta * std_dev
-        print('acquisition_values',acquisition_values)
+        # print('acquisition_values',acquisition_values)
         return acquisition_values
 
     # def predict_with_gp(self, model, state, action):
@@ -333,10 +354,10 @@ class KRVI:
         # Define the RBF kernel
         kernel = RBF(length_scale=l, length_scale_bounds="fixed")
 
-        if self.logging:
-            wandb.run.summary["kernel type"] = str(kernel)
-            wandb.run.summary["alpha_gp"] = alpha
-            wandb.run.summary["length_scale"] = l
+        # if self.logging:
+        #     wandb.run.summary["kernel type"] = str(kernel)
+        #     wandb.run.summary["alpha_gp"] = alpha
+        #     wandb.run.summary["length_scale"] = l
 
         # Create GPR model
         gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None, alpha=alpha)  # Disabling kernel parameter optimization
@@ -354,7 +375,7 @@ class KRVI:
 if __name__ == "__main__":
     #env = "MiniGrid-Empty-5x5-v0"  # Replace with your desired MiniGrid environment
     env= "FrozenLake-v1"
-    krvi = KRVI(kernel="RBF", backend="GP", env=env, beta=1.0, horizon=5, Q=None, V=None, train_freq=(1, "episode"), verbose=1)
-    krvi.train(T=5)
+    krvi = KRVI(kernel="RBF", backend="GP", env=env, beta=1.0, horizon=20, Q=None, V=None, train_freq=(1, "episode"), verbose=1)
+    krvi.train(T=100, warm_up= 10)
 
 
