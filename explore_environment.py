@@ -7,9 +7,9 @@ from utils import generate_random_map
 
 
 # CONSTANTS
-GRID_SIZE = 20
+GRID_SIZE = 4
 P = 0.5
-ROTATE = 1
+ROTATE = 0
 DESC = generate_random_map(GRID_SIZE, P, ROTATE)
 EMPTY_BOARD = np.full((GRID_SIZE, GRID_SIZE), '.')
 EMPTY_BOARD[0][0] = 'X'
@@ -19,6 +19,7 @@ START_POSITION = next(start_position_cycle)
 for i in range(ROTATE):
     EMPTY_BOARD = np.array(list(zip(*EMPTY_BOARD[::-1])))
     START_POSITION = next(start_position_cycle)
+
 
 def print_grid(stdscr, grid, message=""):
     stdscr.clear()
@@ -50,11 +51,6 @@ def main(stdscr):
 
     env = gym.make('FrozenLake-v1', desc=DESC, map_name=None, is_slippery=False)
     env.reset()
-    # desc = str(env.env.env.env.desc)
-    # print(DESC)
-    # print(desc)
-    
-    # assert DESC == desc
 
     grid, position = refresh_starting_position(stdscr, EMPTY_BOARD)
 
