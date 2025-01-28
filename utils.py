@@ -48,3 +48,30 @@ def generate_random_map(size: int = 8, p: float = 0.8, rotate:int = 0) -> List[s
         desc = list(zip(*desc[::-1]))
     return desc
 
+def generate_random_map_with_fixed_lakes(size: int = 8, n_hole: int = 1, rotate: int = 0) -> List[str]:
+    """Generates a random valid map (one that has a path from start to goal)
+
+    Args:
+        size: size of each side of the grid
+        n_hole: number of lakes to place
+
+    Returns:
+        A random valid map, or the empty list [] is none exists
+    """
+    valid = False
+    
+    while not valid:
+        board = np.full((size, size), "F")  # initialize to make pyright happy
+        board[0][0] = "S"
+        board[-1][-1] = "G"
+        positions = list(range(size**2 - 2)) # number of options for holes
+        hole_positions = np.random.choice(positions, size=n_hole, replace = False)
+        for position in hole_positions:
+            pos_tup = divmod(position + 1, size) # cannot be 0, 0
+            board[pos_tup] = "H"
+        valid = is_valid(board, size)
+    desc = ["".join(x) for x in board]
+
+    for i in range(rotate):
+        desc = list(zip(*desc[::-1]))
+    return desc

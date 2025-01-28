@@ -6,6 +6,8 @@ import gymnasium as gym
 from gymnasium import spaces
 from gymnasium.core import ActType, ObsType, WrapperObsType
 
+from utils import generate_random_map
+
 class FrozenLake2DStateWrapper(
     gym.ObservationWrapper[WrapperObsType, ActType, ObsType],
 ):
@@ -41,7 +43,7 @@ class FrozenLake2DStateWrapper(
         n_holes = len(self.hole_positions)
         self.hole_positions = np.array(self.hole_positions)
 
-        self.observation_space = spaces.Box(low=0, high=self.grid_size, shape=(2, n_holes+3), dtype=int)
+        self.observation_space = spaces.Box(low=0, high=self.grid_size, shape=(n_holes+3, 2), dtype=int)
 
 
     def observation(self, observation: ObsType) -> Any:
@@ -63,6 +65,7 @@ class FrozenLake2DStateWrapper(
 
     def _get_position_from_obs(self, obs: int) -> Tuple[int]:
         return divmod(obs, self.grid_size)
+
 
 if __name__ == "__main__":
     env = gym.make('FrozenLake-v1', map_name='4x4', is_slippery=False)
