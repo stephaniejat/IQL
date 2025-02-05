@@ -10,12 +10,19 @@ from utils import generate_random_map
 
 class FrozenLake2DStateWrapper(
     gym.ObservationWrapper[WrapperObsType, ActType, ObsType],
+    gym.utils.RecordConstructorArgs,
 ):
     def __init__(
         self,
         env: gym.Env[ObsType, ActType],
+        rescale = False,
     ):
+        gym.utils.RecordConstructorArgs.__init__(
+            self, rescale=rescale,
+        )
         gym.ObservationWrapper.__init__(self, env)
+
+        self.rescale = rescale
 
         self.desc = env.unwrapped.desc
         self.char_map = {
@@ -60,7 +67,9 @@ class FrozenLake2DStateWrapper(
                 self.goal_position.reshape(1,-1), 
                 self. hole_positions
                 ]
-                )
+                ) * 1.0
+        if self.rescale:
+            pos_obs -= self.grid_size * 0.5
         return pos_obs
 
     def _get_position_from_obs(self, obs: int) -> Tuple[int]:
@@ -70,7 +79,7 @@ class FrozenLake2DStateWrapper(
 if __name__ == "__main__":
     env = gym.make('FrozenLake-v1', map_name='4x4', is_slippery=False)
     print(env.unwrapped.desc)
-    env = FrozenLake2DStateWrapper(env)
+    env = FrozenLake2DStateWrapper(env, rescale = True)
     env.reset()
     for i in range(100):
         action = int(input())
