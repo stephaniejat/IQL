@@ -3,35 +3,56 @@ from torch import nn
 import torch.nn.functional as F
 import numpy as np
 import torch.nn.utils.parametrize as parametrize
+from KRVI.group_rep import GroupRep
 
 
 class EquivariantP(nn.Module):
     def __init__(self, in_group, out_group, dtype=torch.float):
         super().__init__()
-        self.in_group = in_group
-        self.out_group = out_group
+        self.in_group = [nn.Parameter(g) for g in in_group.transformations]
+        self.out_group = [nn.Parameter(g) for g in out_group.transformations]
+        for i,g in enumerate(self.in_group):
+            self.register_parameter("g_{}".format(i), g)
+        for i,g in enumerate(self.out_group):
+            self.register_parameter("h_{}".format(i), g)
         self.dtype = dtype
+        
 
     def forward(self, X):
         weights = torch.zeros_like(X).to(self.dtype) 
 
-        for g,h in zip(self.in_group.transformations, self.out_group.transformations):
+        for g,h in zip(self.in_group, self.out_group):
             h_1 = torch.inverse(h).to(self.dtype) #TODO: if this is slow, we can just restrict to orthogonal. 
             weights = weights + h_1 @ X @ g.to(self.dtype) 
         return weights
+    
+    # def to(self, device):
+    #     # Move the module and its parameters to the specified device
+    #     module = super().to(device)
+    #     module.in_group = module.in_group.to(device)
+    #     module.out_group = module.out_group.to(device)
+    #     return module
             
 class RightInvariantP(nn.Module):
     def __init__(self, group, dtype=torch.float):
         super().__init__()
-        self.group = group
+        self.group = [nn.Parameter(g) for g in group.transformations]
+        for i,g in enumerate(self.group):
+            self.register_parameter("h_{}".format(i), g)
         self.dtype = dtype
 
     def forward(self, X):
         weights = torch.zeros_like(X).to(self.dtype) 
 
-        for g in self.group.transformations:
+        for g in self.group:
             weights = weights + g.to(self.dtype) 
         return weights @ X
+
+    # def to(self, device):
+    #     # Move the module and its parameters to the specified device
+    #     module = super().to(device)
+    #     module.group = module.group.to(device)
+    #     return module
 
 class LeftInvariantP(nn.Module):
     def __init__(self, group, dtype=torch.float):
@@ -45,6 +66,12 @@ class LeftInvariantP(nn.Module):
         for g in self.group.transformations:
             weights = weights + g.to(self.dtype) 
         return X @ weights
+    
+    # def to(self, device):
+    #     # Move the module and its parameters to the specified device
+    #     module = super().to(device)
+    #     module.group = module.group.to(device)
+    #     return module
 
 
 class LinearProjLayer(torch.nn.Module):

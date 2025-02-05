@@ -9,6 +9,7 @@ class GroupRep:
     @classmethod
     def trivial(cls, dim:int, dtype=torch.float):
         transformations = [torch.eye(dim, requires_grad = False, dtype=dtype)]
+        return cls(transformations, dtype=dtype)
 
     def __getitem__(self, index):
         return self.transformations[index]
@@ -18,3 +19,6 @@ class GroupRep:
 
     def check_closed(self):
         pass
+
+    def to(self, device):
+        self.transformations = [t.to(device) for t in self.transformations]

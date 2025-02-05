@@ -74,7 +74,7 @@ def train_eval_feedforward_model(model, learning_rate, num_epochs, train_loader,
                 # Zero the parameter gradients
                 optimizer.zero_grad()
                 # Forward passe
-                outputs = model(inputs)
+                outputs = model(inputs.cuda())
                 if tr_type =="autoencoder":
                     targets = inputs.clone().detach()
                 elif tr_type == "inv_regression":
@@ -82,7 +82,7 @@ def train_eval_feedforward_model(model, learning_rate, num_epochs, train_loader,
                     outputs = outputs.flatten()
                 elif tr_type == "regression":
                     outputs = outputs.flatten()
-                loss = criterion(outputs, targets)
+                loss = criterion(outputs.cuda(), targets.cuda())
 
                 # Backward pass and optimization
                 loss.backward()
@@ -97,7 +97,7 @@ def train_eval_feedforward_model(model, learning_rate, num_epochs, train_loader,
                 total_loss = 0.0
                 for inputs, targets, inv_targets in test_loader:
 
-                    outputs = model(inputs)
+                    outputs = model(inputs.cuda())
                     if tr_type =="autoencoder":
                         targets = inputs.clone().detach()
                     elif tr_type == "inv_regression":
@@ -106,7 +106,7 @@ def train_eval_feedforward_model(model, learning_rate, num_epochs, train_loader,
                     elif tr_type == "regression":
                         outputs = outputs.flatten()
                         pass
-                    loss = criterion(outputs, targets)
+                    loss = criterion(outputs.cuda(), targets.cuda())
                     total_loss += loss.item()
 
                 avg_loss = total_loss / len(test_loader)
@@ -185,21 +185,21 @@ def main():
         nn.Linear(256, 256),
         nn.ReLU(),
         nn.Linear(256, 1)
-    )
+    ).cuda()
     regressor_base2 = copy.deepcopy(regressor_base1) #TODO: implement correctly
 
     # Regressor with equivariant linear projection layer
     regressor1 = nn.Sequential(
-        LinearProjLayer(DIM_IN, DIM_OUT, G12, G2, bias = True),
-        nn.ReLU(),
-        nn.Linear(2, 256),
+        # LinearProjLayer(DIM_IN, DIM_OUT, G12, G2, bias = True),
+        # nn.ReLU(),
+        nn.Linear(12, 256),
         nn.ReLU(),
         nn.Linear(256, 256),
         nn.ReLU(),
         nn.Linear(256, 256),
         nn.ReLU(),
         nn.Linear(256, 1)
-    )
+    ).cuda()
     regressor2 = copy.deepcopy(regressor1) #TODO: implement correctly
     # Regressor with non-linear equivariant backbone
     
@@ -231,11 +231,11 @@ def main():
     # train_eval_feedforward_model(eqv_linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "eqv_lin_ae")
     # train_eval_feedforward_model(non_linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "eqv_nonlin_ae")
     train_eval_feedforward_model(regressor_base1, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_base", tr_type = "regression")
-    train_eval_feedforward_model(regressor_base2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_base", tr_type = "inv_regression")
+    # train_eval_feedforward_model(regressor_base2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_base", tr_type = "inv_regression")
     train_eval_feedforward_model(regressor1, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_shallow", tr_type = "regression")
-    train_eval_feedforward_model(regressor2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_shallow", tr_type = "inv_regression")
-    train_eval_feedforward_model(regressor3, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_deep", tr_type = "regression")
-    train_eval_feedforward_model(regressor4, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_deep", tr_type = "inv_regression")
+    # train_eval_feedforward_model(regressor2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_shallow", tr_type = "inv_regression")
+    # train_eval_feedforward_model(regressor3, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_deep", tr_type = "regression")
+    # train_eval_feedforward_model(regressor4, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_deep", tr_type = "inv_regression")
     
 
 if __name__ == "__main__":
