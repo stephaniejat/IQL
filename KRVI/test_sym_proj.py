@@ -190,9 +190,9 @@ def main():
 
     # Regressor with equivariant linear projection layer
     regressor1 = nn.Sequential(
-        # LinearProjLayer(DIM_IN, DIM_OUT, G12, G2, bias = True),
-        # nn.ReLU(),
-        nn.Linear(12, 256),
+        LinearProjLayer(DIM_IN, DIM_OUT, G12, G2, bias = True),
+        nn.ReLU(),
+        nn.Linear(2, 256),
         nn.ReLU(),
         nn.Linear(256, 256),
         nn.ReLU(),

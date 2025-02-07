@@ -7,8 +7,8 @@ class GroupRep:
         self.transformations = [torch.tensor(g, requires_grad = False, dtype=dtype) for g in transformations]
 
     @classmethod
-    def trivial(cls, dim:int, dtype=torch.float):
-        transformations = [torch.eye(dim, requires_grad = False, dtype=dtype)]
+    def trivial(cls, dim:int, length:int, dtype=torch.float):
+        transformations = [torch.eye(dim, requires_grad = False, dtype=dtype)] * length
         return cls(transformations, dtype=dtype)
 
     def __getitem__(self, index):
@@ -22,3 +22,6 @@ class GroupRep:
 
     def to(self, device):
         self.transformations = [t.to(device) for t in self.transformations]
+
+    def __len__(self):
+        return len(self.transformations)

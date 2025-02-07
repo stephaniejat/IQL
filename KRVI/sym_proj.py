@@ -42,7 +42,8 @@ class RightInvariantP(nn.Module):
         self.dtype = dtype
 
     def forward(self, X):
-        weights = torch.zeros_like(X).to(self.dtype) 
+        g = self.group[0]
+        weights = torch.zeros_like(g).to(self.dtype) 
 
         for g in self.group:
             weights = weights + g.to(self.dtype) 
@@ -57,13 +58,16 @@ class RightInvariantP(nn.Module):
 class LeftInvariantP(nn.Module):
     def __init__(self, group, dtype=torch.float):
         super().__init__()
-        self.group = group
+        self.group = [nn.Parameter(g) for g in group.transformations]
+        for i,g in enumerate(self.group):
+            self.register_parameter("g_{}".format(i), g)
         self.dtype = dtype
 
     def forward(self, X):
-        weights = torch.zeros_like(X).to(self.dtype) 
+        g = self.group[0]
+        weights = torch.zeros_like(g).to(self.dtype) 
 
-        for g in self.group.transformations:
+        for g in self.group:
             weights = weights + g.to(self.dtype) 
         return X @ weights
     
@@ -81,13 +85,28 @@ class LinearProjLayer(torch.nn.Module):
         super().__init__()
 
         if out_group is None:
-            out_group = GroupRep.trivial(out_dim) # TODO: test this
+            out_group = GroupRep.trivial(out_dim, len(in_group)) # TODO: test this
 
         self.linear = nn.Linear(in_dim,out_dim, bias=bias)
         parametrize.register_parametrization(self.linear, "weight", EquivariantP(in_group, out_group))
 
         if bias:
             parametrize.register_parametrization(self.linear, "bias", RightInvariantP(out_group))
+         
+    def forward(self, x):
+        return self.linear(x)
+
+
+class LinearProjLayer_inv(torch.nn.Module):
+    # Implements  W * (sum_{g G} g )* x + b
+    
+    # TODO: This is much more numerically stable that passing out_group=None in the LinearProjLayer
+    # I would like to understand why.
+    def __init__(self, in_dim, out_dim, in_group, out_group=None, bias=True):
+        super().__init__()
+
+        self.linear = nn.Linear(in_dim,out_dim, bias=bias)
+        parametrize.register_parametrization(self.linear, "weight", LeftInvariantP(in_group))
          
     def forward(self, x):
         return self.linear(x)
