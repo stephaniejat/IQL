@@ -41,7 +41,7 @@ class SymmetricFeatureExtractor(BaseFeaturesExtractor):
             # nn.ReLU(),
             # LinearProjLayer(8, 6, G8, G6, bias = True),
             # nn.ReLU(),
-            LinearProjLayer_inv(14, 4, G14, out_group=None, bias = True),
+            LinearProjLayer(14, 4, G14, out_group=None, bias = True),
             nn.ReLU()
         )
         
