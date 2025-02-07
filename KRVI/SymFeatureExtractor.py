@@ -5,7 +5,7 @@ from gymnasium import spaces
 from stable_baselines3 import PPO
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 
-from KRVI.sym_proj import LinearProjLayer
+from KRVI.sym_proj import LinearProjLayer, LeftInvariantP, LinearProjLayer_inv
 from KRVI.group_rep import GroupRep
 
 from utils import construct_90deg_block_rot_groups
@@ -41,7 +41,7 @@ class SymmetricFeatureExtractor(BaseFeaturesExtractor):
             # nn.ReLU(),
             # LinearProjLayer(8, 6, G8, G6, bias = True),
             # nn.ReLU(),
-            LinearProjLayer(14, 4, G14, out_group=None, bias = True),
+            LinearProjLayer_inv(14, 4, G14, out_group=None, bias = True),
             nn.ReLU()
         )
         
