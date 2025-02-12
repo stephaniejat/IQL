@@ -18,7 +18,7 @@ class FrozenLake2DStateWrapper(
         rescale = False,
     ):
         gym.utils.RecordConstructorArgs.__init__(
-            self, rescale=rescale,
+            self, rescale=rescale
         )
         gym.ObservationWrapper.__init__(self, env)
 
@@ -50,7 +50,11 @@ class FrozenLake2DStateWrapper(
         n_holes = len(self.hole_positions)
         self.hole_positions = np.array(self.hole_positions)
 
-        self.observation_space = spaces.Box(low=0, high=self.grid_size, shape=(n_holes+3, 2), dtype=int)
+        if self.rescale:
+            # Twice as wide to avoid self.rescale changing data types.
+            self.observation_space = spaces.Box(low= -self.grid_size, high=self.grid_size, shape=(n_holes+3, 2), dtype=int) 
+        else:
+            self.observation_space = spaces.Box(low=0, high=self.grid_size, shape=(n_holes+3, 2), dtype=int)
 
 
     def observation(self, observation: ObsType) -> Any:
@@ -65,11 +69,11 @@ class FrozenLake2DStateWrapper(
                 current_pos.reshape(1,-1), 
                 self.start_position.reshape(1,-1), 
                 self.goal_position.reshape(1,-1), 
-                self. hole_positions
+                self.hole_positions
                 ]
-                ) * 1.0
+        )
         if self.rescale:
-            pos_obs -= self.grid_size * 0.5
+            pos_obs = 2 * pos_obs - self.grid_size + 1
         return pos_obs
 
     def _get_position_from_obs(self, obs: int) -> Tuple[int]:
@@ -77,6 +81,7 @@ class FrozenLake2DStateWrapper(
 
 
 if __name__ == "__main__":
+    # Sample usage
     env = gym.make('FrozenLake-v1', map_name='4x4', is_slippery=False)
     print(env.unwrapped.desc)
     env = FrozenLake2DStateWrapper(env, rescale = True)
