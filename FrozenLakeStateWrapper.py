@@ -51,7 +51,7 @@ class FrozenLake2DStateWrapper(
         n_holes = len(self.hole_positions)
         self.hole_positions = np.array(self.hole_positions)
 
-        self.observation_space = spaces.Box(low=0, high=self.grid_size, shape=(n_holes+3, 2), dtype=int)
+        self.observation_space = spaces.Box(low=-0.5*self.grid_size + 0.5, high= 3 - self.grid_size*0.5 +0.5, shape=(n_holes+2, 2), dtype=int)
 
 
     def observation(self, observation: ObsType) -> Any:
@@ -70,7 +70,8 @@ class FrozenLake2DStateWrapper(
                 ) * 1.0
         if self.rescale:
             #pos_obs = pos_obs / (self.grid_size - 1)
-            pos_obs -= self.grid_size * 0.5
+           
+            pos_obs = pos_obs - self.grid_size * 0.5 + 0.5
         return pos_obs
 
     def _get_position_from_obs(self, obs: int) -> Tuple[int]:
