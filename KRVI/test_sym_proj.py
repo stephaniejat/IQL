@@ -227,15 +227,15 @@ def main():
     learning_rate = 0.001
     num_epochs = 20
 
-    # train_eval_feedforward_model(linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "linear_ae")
-    # train_eval_feedforward_model(eqv_linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "eqv_lin_ae")
-    # train_eval_feedforward_model(non_linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "eqv_nonlin_ae")
+    train_eval_feedforward_model(linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "linear_ae")
+    train_eval_feedforward_model(eqv_linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "eqv_lin_ae")
+    train_eval_feedforward_model(non_linear_autoencoder, learning_rate, num_epochs, train_loader, test_loader, run_name = "eqv_nonlin_ae")
     train_eval_feedforward_model(regressor_base1, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_base", tr_type = "regression")
-    # train_eval_feedforward_model(regressor_base2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_base", tr_type = "inv_regression")
+    train_eval_feedforward_model(regressor_base2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_base", tr_type = "inv_regression")
     train_eval_feedforward_model(regressor1, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_shallow", tr_type = "regression")
-    # train_eval_feedforward_model(regressor2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_shallow", tr_type = "inv_regression")
-    # train_eval_feedforward_model(regressor3, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_deep", tr_type = "regression")
-    # train_eval_feedforward_model(regressor4, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_deep", tr_type = "inv_regression")
+    train_eval_feedforward_model(regressor2, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_shallow", tr_type = "inv_regression")
+    train_eval_feedforward_model(regressor3, learning_rate, num_epochs, train_loader, test_loader, run_name = "reg_deep", tr_type = "regression")
+    train_eval_feedforward_model(regressor4, learning_rate, num_epochs, train_loader, test_loader, run_name = "inv_reg_deep", tr_type = "inv_regression")
     
 
 if __name__ == "__main__":

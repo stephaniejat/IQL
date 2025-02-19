@@ -5,6 +5,8 @@ from typing import List
 class GroupRep:
     def __init__(self, transformations: List[np.ndarray], dtype=torch.float):
         self.transformations = [torch.tensor(g, requires_grad = False, dtype=dtype) for g in transformations]
+        # extract dimension of the domain
+        self._dim = self.transformations[0].shape[1]
 
     @classmethod
     def trivial(cls, dim:int, length:int, dtype=torch.float):
@@ -25,3 +27,7 @@ class GroupRep:
 
     def __len__(self):
         return len(self.transformations)
+    
+    @property
+    def dim(self):
+        return self._dim

@@ -25,13 +25,7 @@ class EquivariantP(nn.Module):
             h_1 = torch.inverse(h).to(self.dtype) #TODO: if this is slow, we can just restrict to orthogonal. 
             weights = weights + h_1 @ X @ g.to(self.dtype) 
         return weights
-    
-    # def to(self, device):
-    #     # Move the module and its parameters to the specified device
-    #     module = super().to(device)
-    #     module.in_group = module.in_group.to(device)
-    #     module.out_group = module.out_group.to(device)
-    #     return module
+
             
 class RightInvariantP(nn.Module):
     def __init__(self, group, dtype=torch.float):
@@ -49,11 +43,6 @@ class RightInvariantP(nn.Module):
             weights = weights + g.to(self.dtype) 
         return weights @ X
 
-    # def to(self, device):
-    #     # Move the module and its parameters to the specified device
-    #     module = super().to(device)
-    #     module.group = module.group.to(device)
-    #     return module
 
 class LeftInvariantP(nn.Module):
     def __init__(self, group, dtype=torch.float):
@@ -70,12 +59,6 @@ class LeftInvariantP(nn.Module):
         for g in self.group:
             weights = weights + g.to(self.dtype) 
         return X @ weights
-    
-    # def to(self, device):
-    #     # Move the module and its parameters to the specified device
-    #     module = super().to(device)
-    #     module.group = module.group.to(device)
-    #     return module
 
 
 class LinearProjLayer(torch.nn.Module):
