@@ -20,11 +20,11 @@ import argparse
 import os
 import gc
 os.environ["WANDB__SERVICE_WAIT"] = "300"
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu") 
+device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu") 
 print('device',device)
 from test_rotated_env import FrozenLake2DStateWrapper
 from torch.profiler import profile, record_function, ProfilerActivity
-# from invariant_kernel import InvariantKernel, construct_90deg_block_rot_groups, apply_rotation_group
+from invariant_kernel import InvariantKernel, construct_90deg_block_rot_groups, apply_rotation_group
 # from botorch import settings
 # settings.debug(True)
 torch.cuda.empty_cache()
@@ -297,7 +297,6 @@ class KRVI:
         del X, y, mll  # Safe to delete
         torch.cuda.empty_cache()  # Free GPU memory  
 
-       
         return model
 
     def GP_regression_torch(self, X, y, model = None): #I removed normalization
@@ -314,7 +313,7 @@ class KRVI:
 
         if model is None:
             likelihood = gpytorch.likelihoods.GaussianLikelihood()
-            model = ExactGPModel(train_x=X, train_y=y, likelihood=likelihood).to(device)
+            model = ExactGPModel(train_x=X, train_y=y, likelihood=likelihood, kernel=self.kernel).to(device)
         else: 
             model = model.set_train_data(X, y, strict = False)
         # model = ExactGP(train_X=X,train_Y= y.unsqueeze(-1).to(device)) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
@@ -363,10 +362,10 @@ class KRVI:
 
 
 class ExactGPModel(gpytorch.models.ExactGP):
-    def __init__(self, train_x, train_y, likelihood):
+    def __init__(self, train_x, train_y, likelihood, kernel):
         super(ExactGPModel, self).__init__(train_x, train_y, likelihood)
         self.mean_module = gpytorch.means.ZeroMean()
-        self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel())
+        self.covar_module = kernel
 
     def forward(self, x):
         mean_x = self.mean_module(x)
@@ -417,11 +416,15 @@ if __name__ == "__main__":
     #     is_isotropic=True,
     #     is_group=True,
     # )
-
+    k_G = InvariantKernel(
+    base_kernel=RBFKernel(),
+    transformations=apply_rotation_group,
+    is_isotropic=True,
+    is_group=True,
+    )
     # activities = [ProfilerActivity.CPU, ProfilerActivity.CUDA]
     krvi = KRVI(
-        kernel= ScaleKernel(RBFKernel()),
-        #kernel = k_G,
+        kernel = k_G,
         env= env,
         beta=args.beta,
         horizon=args.horizon,
