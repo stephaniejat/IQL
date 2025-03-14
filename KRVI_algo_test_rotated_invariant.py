@@ -349,7 +349,6 @@ if __name__ == "__main__":
     if args.kernel=='RBF':
         k_G=RBFKernel()
     elif args.kernel == 'invariant_kernel':
-        print('hi')
 
         k_G = InvariantKernel(
         base_kernel=RBFKernel(),
