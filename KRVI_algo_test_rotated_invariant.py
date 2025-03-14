@@ -219,9 +219,7 @@ class KRVI:
           
                 state = next_state
             
-            # for s in episode_states:
-            #     print(s)
-            # print('episode_actions',episode_actions)
+          
             all_states.append(np.array(episode_states))
             all_actions.append(np.array(episode_actions))
             all_rewards.append(np.array(episode_rewards))
@@ -256,9 +254,6 @@ class KRVI:
         y = torch.tensor(y, dtype=torch.float32,device=device)
 
         model = SingleTaskGP(train_X=X,train_Y= y.unsqueeze(-1).to(device)) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
-        # model.covar_module = ScaleKernel( self.kernel
-        #    # RBFKernel() 
-        # ).to(device) 
        
         model.covar_module = self.kernel.to(device)
       
@@ -276,7 +271,6 @@ class KRVI:
             model.covar_module.base_kernel.lengthscale = torch.tensor(
                 [self.len_scale], dtype=torch.float32, device=device
             )
-            # print('len scale',model.covar_module.base_kernel.lengthscale)
             
             model.covar_module.base_kernel.raw_lengthscale.requires_grad = False
 
@@ -302,7 +296,6 @@ class KRVI:
 
             
        
-        # print( model.likelihood.raw_noise)
             # **Memory Cleanup**
         del X, y  # Safe to delete
         torch.cuda.empty_cache()  # Free GPU memory  
@@ -355,7 +348,8 @@ if __name__ == "__main__":
     optimal_V= None
     if args.kernel=='RBF':
         k_G=RBFKernel()
-    elif args.kernel == 'invariant_kernel'
+    elif args.kernel == 'invariant_kernel':
+        print('hi')
 
         k_G = InvariantKernel(
         base_kernel=RBFKernel(),
@@ -363,8 +357,7 @@ if __name__ == "__main__":
         is_isotropic=True,
         is_group=True,
         )
-    # uncomment if you would like to use the standard RBF kernel instead of the invariant kernel
-    # k_G=RBFKernel()
+
 
 
     krvi = KRVI(
