@@ -92,6 +92,7 @@ class KRVI:
         torch.cuda.manual_seed(self.seed)
         if self.logging:
            
+            #wandb.init(mode='disabled')
             wandb.init(project=logging, reinit=True, settings=wandb.Settings(start_method="thread"))
             wandb.run.summary["noise_reg"] = self.noise_reg
             wandb.run.summary["length_scale"] = self.len_scale
@@ -275,6 +276,7 @@ class KRVI:
             model.covar_module.base_kernel.lengthscale = torch.tensor(
                 [self.len_scale], dtype=torch.float32, device=device
             )
+            # print('len scale',model.covar_module.base_kernel.lengthscale)
             
             model.covar_module.base_kernel.raw_lengthscale.requires_grad = False
 
@@ -285,19 +287,24 @@ class KRVI:
             model.likelihood.raw_noise.requires_grad = True
 
             mll = gpytorch.mlls.ExactMarginalLogLikelihood(model.likelihood, model).to(device)
+            # for param_name, param in model.named_parameters():
+            #     print(f'Parameter name: {param_name:42} value before fitting = {param.item()} requires_grad: {param.requires_grad}')
 
-            # for name, param in model.named_parameters():
-            #     print(f"{name}: requires_grad={param.requires_grad}")
 
         
         
             with gpytorch.settings.cholesky_max_tries(6):
                 fit_gpytorch_mll(mll)
+            del mll
+           
+                # for param_name, param in model.named_parameters():
+                #     print(f'Parameter name: {param_name:42} value after fitting = {param.item()} ')
+
             
        
         # print( model.likelihood.raw_noise)
             # **Memory Cleanup**
-        del X, y, mll  # Safe to delete
+        del X, y  # Safe to delete
         torch.cuda.empty_cache()  # Free GPU memory  
 
        
@@ -336,6 +343,8 @@ if __name__ == "__main__":
     parser.add_argument("--iterations", type=int, default=2000, help="Number of training iterations (T)")
     parser.add_argument("--seed", type=int, default=0, help="random seed")
     parser.add_argument("--optim_botorch", type= int, default = 1, help ='turn on hyperparm optimization by botorch')
+    parser.add_argument("--kernel", type=str, default="invariant_kernel", help="Choose the kernel between invariant kernel and RBF kernel")
+
 
 
 
@@ -344,12 +353,16 @@ if __name__ == "__main__":
     env=gym.make('FrozenLake-v1', desc=None, map_name="4x4", is_slippery=False)
     env = FrozenLake2DStateWrapper(env, rescale=True)
     optimal_V= None
-    k_G = InvariantKernel(
-    base_kernel=RBFKernel(),
-    transformations=apply_rotation_group,
-    is_isotropic=True,
-    is_group=True,
-    )
+    if args.kernel=='RBF':
+        k_G=RBFKernel()
+    elif args.kernel == 'invariant_kernel'
+
+        k_G = InvariantKernel(
+        base_kernel=RBFKernel(),
+        transformations=apply_rotation_group,
+        is_isotropic=True,
+        is_group=True,
+        )
     # uncomment if you would like to use the standard RBF kernel instead of the invariant kernel
     # k_G=RBFKernel()
 
