@@ -1,0 +1,11 @@
+python3 naive_reward_calculator.py \
+        --input01_path c_wire-anchor_04-mixed-sided_9-1_o0_01_node_feature_list.csv \
+        --input02_path c_wire-anchor_04-mixed-sided_9-1_o0_02_metadata.json \
+        --input04_path c_wire-anchor_04-mixed-sided_9-1_o0_04_net_adjacency_list.csv \
+        --num_grids_on_canvas_shortside 42 \
+        --reset_anchor_weight 1.0 \
+        --rudy_extend_ratio 0.5 0.1 \
+        --penalty_factor 0 0.2 1 5 \
+        --place_cluster False \
+        --wirelen_method hpwl \
+        --unittest_output_file computation_detail.log
