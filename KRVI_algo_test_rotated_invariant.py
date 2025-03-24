@@ -4,7 +4,6 @@ import torch
 import torch.nn as nn
 import gymnasium as gym
 from gymnasium import spaces
-import wandb
 import botorch
 from botorch.models import SingleTaskGP
 from botorch.fit import fit_gpytorch_mll
@@ -18,11 +17,12 @@ import argparse
 import os
 os.environ["WANDB_DISABLED"] = "true"
 os.environ["WANDB__SERVICE_WAIT"] = "300"
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu") 
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 print('device',device)
 from test_rotated_env import FrozenLake2DStateWrapper
 from invariant_kernel import InvariantKernel, construct_90deg_block_rot_groups, apply_rotation_group
 import csv
+
 
 def action_transformation(action_index):
     action_map = {
@@ -91,16 +91,6 @@ class KRVI:
         torch.manual_seed(self.seed)
         torch.cuda.manual_seed(self.seed)
         if self.logging:
-           
-            #wandb.init(mode='disabled')
-            wandb.init(project=logging, reinit=True, settings=wandb.Settings(start_method="thread"))
-            wandb.run.summary["noise_reg"] = self.noise_reg
-            wandb.run.summary["length_scale"] = self.len_scale
-            wandb.run.summary["UCB coef"] = self.beta
-            wandb.run.summary["optim_botorch"] = self.optim_botorch
-            wandb.run.summary["seed"] = self.seed
-            wandb.run.summary["kernel"]= self.kernel
-
             with open(self.config_file, mode='w') as f:
                 f.write(f"beta={self.beta}\n")
                 f.write(f"len_scale={self.len_scale}\n")
@@ -116,27 +106,15 @@ class KRVI:
                     
                     writer = csv.writer(f)
                     writer.writerow(['Episode', 'Reward', 'Cumulative Returns'])  # Column headers
-    
-    
 
     def train(self, T: int):
-        
         action_space = np.arange(self.env.action_space.n)      # Assuming discrete action space
-       
-        
-    
-        # Log hyperparameters
-        if self.logging:
-            wandb.run.summary["episode length"] = self.horizon
-            wandb.run.summary["iterations"] = T
-            
         # Arrays to store episode data
         all_states = []
         all_actions = []
         all_rewards = []
         Qt= [None] * self.horizon
         cumulative_returns = []
-
 
         for episode in range(T):
             if self.verbose > 0:
@@ -152,7 +130,6 @@ class KRVI:
                         if h < len(all_states[i]):
                             X_states.append(all_states[i][h])
                             X_actions.append(all_actions[i][h])
-
                             if h < len(all_states[i]) - 1:
                                 next_state = all_states[i][h + 1]
                                 actions_batch = np.array([self.action_transformation(action) for action in action_space])
@@ -171,39 +148,32 @@ class KRVI:
                     if X_states:
                         X = np.column_stack((X_states, X_actions))
                         y = np.array(y_values)
-                        Qt[h] = self.GP_regression_torch(X, y)
+                        if Qt[h]:
+                            Qt[h] = self.GP_regression_torch(X[-1].reshape(1,-1), y[-1].reshape(1,-1), Qt[h])
+                        else:
+                            Qt[h] = self.GP_regression_torch(X, y, None)
 
-        
-          # Execute episode
-              # Initialize arrays for the current episode
+            # Execute episode
+            # Initialize arrays for the current episode
             episode_states = []
             episode_actions = []
             episode_rewards = []
 
             initial_state, info = self.env.reset()
-            #print('self.current_rotation',self.env.current_rotation)
-            #print('self.desc',self.env.desc)
-
             state= preprocess_state(initial_state) 
-
-          
            
             for h in range(self.horizon):
-            
                 if Qt[h]:  # Ensure a model is available for the current step
-               
                     # Prepare inputs for batched prediction
                     states_batch = np.tile(state, (len(action_space), 1))
                     actions_batch = np.array([self.action_transformation(action) for action in action_space])
                     # Predict Q-values for all actions in a single batch
                     q_values = self.predict_with_gp(Qt[h], states_batch, actions_batch)[0]
-
                 else:
                     # Default Q-values if no model is available
                     q_values = np.zeros(len(action_space))
 
                 # Select action with the highest Q-value
-            
                 action = action_space[np.argmax(q_values)]
                 next_state, reward, done, truncated , info = self.env.step(action)
                 next_state = preprocess_state(next_state)  # Convert to numpy array
@@ -213,35 +183,28 @@ class KRVI:
                 action= self.action_transformation(action)
                 episode_actions.append(action)
                 episode_rewards.append(reward)
-                  # If done or truncated, break the loop early
+                # If done or truncated, break the loop early
                 if done or truncated:
                     break
-          
                 state = next_state
-            
           
             all_states.append(np.array(episode_states))
             all_actions.append(np.array(episode_actions))
             all_rewards.append(np.array(episode_rewards))
-
-
             episode_cum_rewards = np.sum(episode_rewards)
             cumulative_returns.append(episode_cum_rewards) 
-
 
             if self.logging:
                 metrics = {
                     "Episode_number": episode,
                     "Episode_Rewards": episode_cum_rewards,
-                    "cumulative_returns": sum(cumulative_returns)
+                    "cumulative_returns": sum(cumulative_returns),
+                    "episode_len": len(episode_rewards),
+                    "orientation_this_episode": self.env.current_rotation,
                 }
-                wandb.log(metrics)
-                with open(self.csv_file, mode='a', newline='') as f:
-                    writer = csv.writer(f)
-                    writer.writerow([episode, episode_cum_rewards, sum(cumulative_returns)])
-
+                print(metrics)
     
-    def GP_regression_torch(self, X, y): #I removed normalization
+    def GP_regression_torch(self, X, y, model): #I removed normalization
         """
         Gaussian Process regression using PyTorch.
         
@@ -252,59 +215,32 @@ class KRVI:
          # Ensure inputs are torch tensors and use double precision
         X = torch.tensor(X, dtype=torch.float32,device=device)
         y = torch.tensor(y, dtype=torch.float32,device=device)
+        if model is None:
+            model = SingleTaskGP(train_X=X,train_Y= y.unsqueeze(-1).to(device), covar_module = self.kernel.to(device)) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
+            lengthscale_tensor = torch.tensor([self.len_scale], dtype=torch.float32, device=device)
 
-        model = SingleTaskGP(train_X=X,train_Y= y.unsqueeze(-1).to(device)) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
-       
-        model.covar_module = self.kernel.to(device)
-      
-        if isinstance(model.covar_module, gpytorch.kernels.RBFKernel):
-            model.covar_module.lengthscale = torch.tensor(
-            [self.len_scale], dtype=torch.float32, device=device
-            )
-        
-            model.covar_module.raw_lengthscale.requires_grad = False
-            #print("The covariance module is an RBF kernel.")
+            if hasattr(model.covar_module, 'base_kernel'):
+                # model.covar_module.base_kernel works only for the invariant kernel
+                base_covar = model.covar_module.base_kernel
+            else:
+                base_covar = model.covar_module
+            # Set and freeze the length scale
+            base_covar.lengthscale = lengthscale_tensor
+            base_covar.raw_lengthscale.requires_grad = False
         else:
-       
-        # model.covar_module.base_kernel works only for the invariant kernel
-# Set and freeze the length scale
-            model.covar_module.base_kernel.lengthscale = torch.tensor(
-                [self.len_scale], dtype=torch.float32, device=device
-            )
-            
-            model.covar_module.base_kernel.raw_lengthscale.requires_grad = False
+            model = model.condition_on_observations(X=X, Y=y)
 
-        # Set and freeze the noise
-        model.likelihood.noise = torch.tensor([self.noise_reg], dtype=torch.float32, device=device) 
-        model.likelihood.raw_noise.requires_grad = False
         if self.optim_botorch == 1:
-            model.likelihood.raw_noise.requires_grad = True
-
             mll = gpytorch.mlls.ExactMarginalLogLikelihood(model.likelihood, model).to(device)
-            # for param_name, param in model.named_parameters():
-            #     print(f'Parameter name: {param_name:42} value before fitting = {param.item()} requires_grad: {param.requires_grad}')
 
-
-        
-        
             with gpytorch.settings.cholesky_max_tries(6):
                 fit_gpytorch_mll(mll)
-            del mll
-           
-                # for param_name, param in model.named_parameters():
-                #     print(f'Parameter name: {param_name:42} value after fitting = {param.item()} ')
-
-            
-       
-            # **Memory Cleanup**
-        del X, y  # Safe to delete
         torch.cuda.empty_cache()  # Free GPU memory  
 
        
         return model
     
     def predict_with_gp(self, model, states_batch, actions_batch):
-
         X_combined = np.hstack((states_batch, actions_batch))  # Shape: (batch_size, 2)
         X_combined = torch.tensor(X_combined, dtype=torch.float32, device=device)
         # Make predictions
@@ -317,17 +253,13 @@ class KRVI:
         # Compute mean + beta * std_dev for each batch element
         acquisition_values = mean + self.beta * std_dev
         return acquisition_values, mean, std_dev
-
-
  
-# Example usage
+
 if __name__ == "__main__":
-
-
     parser = argparse.ArgumentParser(description="Run KRVI Algorithm")
     # Adding arguments for user input
     parser.add_argument("--beta", type=float, default=0.1, help="UCB coefficient")
-    parser.add_argument("--horizon", type=int, default=100, help="Horizon length")
+    parser.add_argument("--horizon", type=int, default=30, help="Horizon length")
     parser.add_argument("--len_scale", type=float, default=0.1, help="Length scale for GP kernel")
     parser.add_argument("--noise_reg", type=float, default=0.1, help="Noise regularization for GP")
     parser.add_argument("--env", type=str, default="FrozenLake-v1", help="Environment name")
@@ -337,9 +269,6 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=0, help="random seed")
     parser.add_argument("--optim_botorch", type= int, default = 1, help ='turn on hyperparm optimization by botorch')
     parser.add_argument("--kernel", type=str, default="invariant_kernel", help="Choose the kernel between invariant kernel and RBF kernel")
-
-
-
 
     args = parser.parse_args()
 
@@ -357,8 +286,6 @@ if __name__ == "__main__":
         is_group=True,
         )
 
-
-
     krvi = KRVI(
         kernel= k_G,
         env= env,
@@ -375,20 +302,3 @@ if __name__ == "__main__":
     )
 
     krvi.train(T= args.iterations)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
