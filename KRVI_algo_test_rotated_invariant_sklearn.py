@@ -1,5 +1,4 @@
 from typing import Any, ClassVar, Optional, TypeVar, Union, Callable
-import random
 import numpy as np
 import torch 
 import torch.nn as nn
@@ -8,10 +7,10 @@ from gymnasium import spaces
 import wandb
 import botorch
 from botorch.models import SingleTaskGP
-from botorch.fit import fit_gpytorch_mll
-import gpytorch
+# from botorch.fit import gp
+# import gpytorch
 from botorch.models.transforms.outcome import Standardize
-from gpytorch.kernels import ScaleKernel, RBFKernel
+
 import time
 import warnings
 warnings.filterwarnings("ignore")
@@ -21,11 +20,13 @@ import os
 os.environ["WANDB__SERVICE_WAIT"] = "300"
 device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu") 
 print('device',device)
-#from test_randomized_env import FrozenLake2DStateWrapper
 from test_rotated_reflected import FrozenLake2DStateWrapper
 #from test_rotated_env import FrozenLake2DStateWrapper
-from invariant_kernel_fixed import InvariantKernel, apply_rotation_group
+from invariant_kernel_sklearn import GroupInvariantKernel, get_np_group_functions
 import csv
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, Matern
+import random
 
 def action_transformation(action_index):
     action_map = {
@@ -90,9 +91,7 @@ class KRVI:
         self.csv_file = 'krvi_metrics.csv'
         self.config_file = 'config.txt'
 
-        # np.random.seed(self.seed)
-        # torch.manual_seed(self.seed)
-        # torch.cuda.manual_seed(self.seed)
+    
         if self.logging:
            
             #wandb.init(mode='disabled')
@@ -163,7 +162,7 @@ class KRVI:
                                 max_q_value = 0
                                 if Qt[h + 1]:
                                     max_q_value = np.max(
-                                        self.predict_with_gp(Qt[h + 1], states_expanded, actions_batch)[0]
+                                        self.predict_with_gp_sklearn(Qt[h + 1], states_expanded, actions_batch)[0]
                                     )
                                 Qnext = max_q_value
                             else:
@@ -174,7 +173,8 @@ class KRVI:
                     if X_states:
                         X = np.column_stack((X_states, X_actions))
                         y = np.array(y_values)
-                        Qt[h] = self.GP_regression_torch(X, y)
+                        Qt[h] = self.GP_regression_sklearn(X, y)
+                        #Qt[h] = self.GP_regression_torch(X, y)
 
         
           # Execute episode
@@ -200,7 +200,7 @@ class KRVI:
                     states_batch = np.tile(state, (len(action_space), 1))
                     actions_batch = np.array([self.action_transformation(action) for action in action_space])
                     # Predict Q-values for all actions in a single batch
-                    q_values = self.predict_with_gp(Qt[h], states_batch, actions_batch)[0]
+                    q_values = self.predict_with_gp_sklearn(Qt[h], states_batch, actions_batch)[0]
 
                 else:
                     # Default Q-values if no model is available
@@ -245,83 +245,23 @@ class KRVI:
                 #     writer.writerow([episode, episode_cum_rewards, sum(cumulative_returns)])
 
     
-    def GP_regression_torch(self, X, y): #I removed normalization
-        """
-        Gaussian Process regression using PyTorch.
-        
-        :param X: Input tensor of shape (n_samples, n_features)
-        :param y: Target tensor of shape (n_samples,)
-        :return: Trained GP model
-        """
-         # Ensure inputs are torch tensors and use double precision
-        X = torch.tensor(X, dtype=torch.float32,device=device)
-        y = torch.tensor(y, dtype=torch.float32,device=device)
+    def GP_regression_sklearn (self,X,y): 
+        kernel = self.kernel
+        gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None,alpha= self.noise_reg,random_state=self.seed) # disabling kernel parameters optimization
+    # Fit the model
+        gpr.fit(X, y)
 
-        model = SingleTaskGP(train_X=X,train_Y= y.unsqueeze(-1).to(device)) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
-       
-        model.covar_module = self.kernel.to(device)
-      
-        if isinstance(model.covar_module, gpytorch.kernels.RBFKernel):
-            model.covar_module.lengthscale = torch.tensor(
-            [self.len_scale], dtype=torch.float32, device=device
-            )
-        
-            model.covar_module.raw_lengthscale.requires_grad = False
-            #print("The covariance module is an RBF kernel.")
-        else:
-       
-        # model.covar_module.base_kernel works only for the invariant kernel
-# Set and freeze the length scale
-            model.covar_module.base_kernel.lengthscale = torch.tensor(
-                [self.len_scale], dtype=torch.float32, device=device
-            )
-            
-            model.covar_module.base_kernel.raw_lengthscale.requires_grad = False
-
-        # Set and freeze the noise
-        model.likelihood.noise = torch.tensor([self.noise_reg], dtype=torch.float32, device=device) 
-        model.likelihood.raw_noise.requires_grad = False
-        if self.optim_botorch == 1:
-            model.likelihood.raw_noise.requires_grad = True
-
-            mll = gpytorch.mlls.ExactMarginalLogLikelihood(model.likelihood, model).to(device)
-            # for param_name, param in model.named_parameters():
-            #     print(f'Parameter name: {param_name:42} value before fitting = {param.item()} requires_grad: {param.requires_grad}')
+        return gpr
 
 
-        
-        
-            with gpytorch.settings.cholesky_max_tries(6):
-                fit_gpytorch_mll(mll)
-            del mll
-           
-            # for param_name, param in model.named_parameters():
-            #     print(f'Parameter name: {param_name:42} value after fitting = {param.item()} ')
 
-            
-       
-            # **Memory Cleanup**
-        del X, y  # Safe to delete
-        torch.cuda.empty_cache()  # Free GPU memory  
+    def predict_with_gp_sklearn(self,model,states_batch,actions_batch):
+        X_combined = np.hstack((states_batch, actions_batch))
+        y_pred_mean, y_pred_std = model.predict(X_combined, return_std=True)
+        acquisition_values = y_pred_mean + self.beta * y_pred_std
+        return acquisition_values,  y_pred_mean, y_pred_std
 
-       
-        return model
-    
-    def predict_with_gp(self, model, states_batch, actions_batch):
-
-        X_combined = np.hstack((states_batch, actions_batch))  # Shape: (batch_size, 2)
-        X_combined = torch.tensor(X_combined, dtype=torch.float32, device=device)
-        # Make predictions
-        model.eval()
-        model.likelihood.eval()
-        with torch.no_grad():
-            posterior = model.posterior(X_combined)
-            mean = posterior.mean.squeeze(-1).detach().cpu().numpy()  # Shape: (batch_size,)
-            std_dev = posterior.variance.sqrt().squeeze(-1).detach().cpu().numpy()  # Shape: (batch_size,)
-        # Compute mean + beta * std_dev for each batch element
-        acquisition_values = mean + self.beta * std_dev
-        return acquisition_values, mean, std_dev
-
+   
 
  
 # Example usage
@@ -335,7 +275,7 @@ if __name__ == "__main__":
     parser.add_argument("--len_scale", type=float, default=0.1, help="Length scale for GP kernel")
     parser.add_argument("--noise_reg", type=float, default=0.1, help="Noise regularization for GP")
     parser.add_argument("--env", type=str, default="FrozenLake-v1", help="Environment name")
-    parser.add_argument("--logging", type=str, default="trial2", help="wandb project name") #IQL_project_invariant
+    parser.add_argument("--logging", type=str, default="trial_sklearn", help="wandb project name") #IQL_project_invariant
     parser.add_argument("--verbose", type=int, default=1, help="Verbosity level (0: silent, 1: info)")
     parser.add_argument("--iterations", type=int, default=1000, help="Number of training iterations (T)")
     parser.add_argument("--seed", type=int, default=0, help="random seed")
@@ -356,15 +296,10 @@ if __name__ == "__main__":
     # print(env.desc)
     optimal_V= None
     if args.kernel=='RBF':
-        k_G=RBFKernel()
+        k_G= RBF(length_scale=args.len_scale,length_scale_bounds="fixed")
     elif args.kernel == 'invariant_kernel':
 
-        k_G = InvariantKernel(
-        base_kernel=RBFKernel(),
-        transformations=apply_rotation_group,
-        is_isotropic=True,
-        is_group=True,
-        )
+        k_G = GroupInvariantKernel(base_kernel="RBF", length_scale=args.len_scale, group=get_np_group_functions())
 
 
 
