@@ -78,6 +78,9 @@ class InvariantKernel(gpytorch.kernels.Kernel):
             K_orbits = self.base_kernel.forward(x1_orbits, x2_orbits)
             #print('K_orbits',K_orbits.shape)
             K = torch.mean(K_orbits, dim=-3)
+            # print("Grad check x1_orbits requires_grad:", x1_orbits.requires_grad)
+            # print("Grad check x2_orbits requires_grad:", x2_orbits.requires_grad)
+
             #print('K',K.shape)
         else:
             # Sum is over all pairs of orbits
@@ -168,11 +171,29 @@ def apply_rotation_group(x: torch.Tensor) -> torch.Tensor:
     transformed = [x @ g.T for g in group]
     return torch.stack(transformed, dim=-3)
 
+def is_positive_definite(K: torch.Tensor, tol: float = 1e-5) -> bool:
+    """
+    Check if a kernel matrix is positive semi-definite by checking if all its eigenvalues
+    are non-negative.
+
+    Args:
+        K (torch.Tensor): The kernel matrix to check.
+        tol (float): The tolerance to consider eigenvalues as non-negative.
+
+    Returns:
+        bool: True if the matrix is positive semi-definite, otherwise False.
+    """
+    # Eigenvalues of the kernel matrix
+    eigenvalues = torch.linalg.eigvals(K)
+
+    # Check if all eigenvalues are non-negative
+    return torch.all(eigenvalues.real >= -tol)
+
 
 def main():
     dim_space = 14  # 14-dimensional vector
     # print( construct_rot_and_reflection_group(dim_space=14))
-    n_datapoints = 1
+    n_datapoints = 10
 
     torch.manual_seed(0)
     x = torch.rand((n_datapoints, dim_space))
@@ -193,10 +214,10 @@ def main():
     print("Invariant kernel matrix:\n", k_G_matrix)
 
     # assert torch.allclose(k_G_matrix, manual_k_G_matrix, atol=1e-5)
-    # if is_positive_definite(manual_k_G_matrix):
-    #     print("The kernel matrix is positive definite.")
-    # else:
-    #     print("The kernel matrix is NOT positive definite.")
+    if is_positive_definite( k_G_matrix):
+        print("The kernel matrix is positive definite.")
+    else:
+        print("The kernel matrix is NOT positive definite.")
 if __name__ == "__main__":
     main()
 
