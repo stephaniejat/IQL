@@ -381,7 +381,7 @@ if __name__ == "__main__":
     parser.add_argument("--len_scale", type=float, default=0.1, help="Length scale for GP kernel")
     parser.add_argument("--noise_reg", type=float, default=0.1, help="Noise regularization for GP")
     parser.add_argument("--env", type=str, default="FrozenLake-v1", help="Environment name")
-    parser.add_argument("--logging", type=str, default="EEE_IQL", help="wandb project name") #IQL_project_invariant
+    parser.add_argument("--logging", type=str, default="trial_submission", help="wandb project name") #IQL_project_invariant
     parser.add_argument("--verbose", type=int, default=1, help="Verbosity level (0: silent, 1: info)")
     parser.add_argument("--iterations", type=int, default=5000, help="Number of training iterations (T)")
     parser.add_argument("--seed", type=int, default=0, help="random seed")

@@ -19,7 +19,7 @@ def main():
     H = 10  # Length of each episode
 
     P_kernel= 'RBF'
-    alpha=0.001
+    alpha=0.01 #0.001
      # Define save directory
     #save_dir = f'Rewards_and_P_invariant_NEW'
     #subdir = os.path.join(save_dir, P_kernel)
@@ -48,8 +48,8 @@ def main():
 
     # Run experiments with p-KRVI policy
     T = 1000 # Number of episodes 
-    beta=0.001 # UCB coefficient
-    NUM_RUNS=10 
+    beta=0.1 # UCB coefficient (0.001)
+    NUM_RUNS=20 
     #wandb.init(project="kernelized_RL")
 
 
@@ -58,7 +58,7 @@ def main():
     #,name=f"run_{run}"
     for run in range(NUM_RUNS):
         # Start a new run for each iteration
-        wandb.init(project="IQL", reinit=True)
+        wandb.init(project="IQL_submission_test", reinit=True)
         wandb.run.summary["alpha_functions"] = alpha
         test_kernelized_RL_invariant.pi_krvi_policy(M, T, state_space, action_space,state_action_space,optimal_value_function, beta)
         # Log metrics specific to this run
