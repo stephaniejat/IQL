@@ -115,8 +115,8 @@ def pi_krvi_policy(M, T, state_space, action_space,state_action_space, optimal_V
                         Qnext.append(0)  # Set Qnext to 0 if we are at the last step
 
                 y = np.array([all_rewards[i][h] + Qnext[i] for i in range(len(Qnext))])
-
-                Qt_mean[h], Qt_std[h] = GP_regression_with_RBF(X, y, state_action_space)
+                # if you would like to test with Standard RBF kernel, replace GP_regression_invariant with GP_regression_with_RBF
+                Qt_mean[h], Qt_std[h] = GP_regression_invariant(X, y, state_action_space)
                 Qt_mean_reshaped = Qt_mean[h].reshape((len(state_space), len(action_space)))
                 Qt_std_reshaped = Qt_std[h].reshape((len(state_space), len(action_space)))
         
