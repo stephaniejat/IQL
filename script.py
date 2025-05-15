@@ -1,5 +1,4 @@
 import test_kernelized_RL_invariant
-#from framework import value_iteration_episodic, transition_P_RKHS, reward_RKHS, plot_reward_gp_3d, plot_transition_probabilities, InvariantKernel
 from common_framework2 import save_rewards_and_transitions, load_saved_data
 import numpy as np
 import wandb
@@ -24,7 +23,7 @@ def main():
     #save_dir = f'Rewards_and_P_invariant_NEW'
     #subdir = os.path.join(save_dir, P_kernel)
     # Add a timestamp to the save directory
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')  # Example format: 2024-11-19_15-30-45
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')  
     save_dir = f'Rewards_and_P_invariant_NEW_{alpha}'
 
     subdir = os.path.join(save_dir, P_kernel)
@@ -34,14 +33,8 @@ def main():
         save_rewards_and_transitions(P_kernel, alpha, save_dir)
     
     P, r, optimal_value_function = load_saved_data(subdir)
-    # print('P',P)
-    # print('P.shape',P.shape)
-    # print('r',r)
-    # print('r.shape',r.shape)
-    # print('optimal_value_function',optimal_value_function)
-    # print('optimal_value_function_shape',optimal_value_function.shape)
 
-    
+
 
     # Define environment M = (S,A,H,P,r)
     M = (S, A, H, P, r)
@@ -50,12 +43,7 @@ def main():
     T = 1000 # Number of episodes 
     beta=0.1 # UCB coefficient (0.001)
     NUM_RUNS=20 
-    #wandb.init(project="kernelized_RL")
 
-
-    # pi_krvi_policy(M, T,state_space, action_space,optimal_value_function,beta)
-
-    #,name=f"run_{run}"
     for run in range(NUM_RUNS):
         # Start a new run for each iteration
         wandb.init(project="IQL_submission_test", reinit=True)

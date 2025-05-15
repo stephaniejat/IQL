@@ -54,34 +54,14 @@ class GroupInvariantKernel(Kernel):
             #print('Transformed kernel shape:', transformed_kernel.shape)
             
             K += transformed_kernel / len(self.group)
-            #K += np.eye(X.shape[0]) * 1e-6
-
-            #K += self.kernel(X_transformed, Y) / len(self.group)
-        #print('k',K.shape)
-        # Add jitter only if K is square
-        # if K.shape[0] == K.shape[1]:
-        #     print('yesss jitter')
-        #     K += np.eye(K.shape[0]) * 1e-6  # Small jitter for stability
-
-        
-        #K += np.eye(X.shape[0]) * 1e-6
-        #K = (K + K.T) / 2
+    
 
 
         return K
 
     def diag(self, X):
         return np.diag(self.__call__(X))
-        # Compute the diagonal entries of the group-invariant kernel
-        # X = np.atleast_2d(X)
-        # K_diag = np.zeros(X.shape[0])
-        
-        # # Average the kernel diagonals over the transformations
-        # for g in self.group:
-        #     X_transformed = np.array([g(x) for x in X])
-        #     K_diag += np.diag(self.kernel(X_transformed, X)) / len(self.group)
-        
-        # return K_diag
+  
 
     def is_stationary(self):
         return True
@@ -98,28 +78,14 @@ def square(x):
 def flip(x):
     return - x
 
-# # # Define transformation groups for state and action
 
-# state_transformations = [lambda x: x, flip] 
-# action_transformations = [lambda x: x, flip]  
-
-
-# # # Combine state and action transformations for 2D inputs (S x A)
-# group_SA = [
-#     lambda x: np.array([g1(x[0]), g2(x[1])]) 
-#     for g1, g2 in product(state_transformations, action_transformations)
-# ]
 group_SA = [
     lambda x: np.array([x[0], x[1]]),        # Identity for both state and action
     lambda x: np.array([flip(x[0]), flip(x[1])])  # Flip for both state and action
 ]
 
 
-# # Combine state, action, and next state transformations for 3D inputs (S x A x S')
-# group_SASp = [
-#     lambda x: np.array([g1(x[0]), g2(x[1]), g3(x[2])]) 
-#     for g1, g2, g3 in product(state_transformations, action_transformations, state_transformations)
-# ]
+
 
 group_SASp = [
     lambda x: np.array([x[0],x[1],x[2]]),        # Identity for both state and action
@@ -147,23 +113,15 @@ def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
 
     # Sample y values from the Gaussian process with the group-invariant kernel
     gp = GaussianProcessRegressor(kernel=kernel)
-    #y = np.random.randn(X.shape[0], 1)
-    #y = np.random.rand(X.shape[0])  # Random values (normal distribution)
+
     y = gp.sample_y(X, 1)
-    #print('X',X.shape)
-    #print('y',y)
-    # Fit the Gaussian Process Regressor
-    #print('alpha',alpha)
+
     gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None, alpha=alpha)
     K = gpr.kernel(X,X)
     eigvals = np.linalg.eigvalsh(K)
-    #print("Kernel matrix eigenvalues:", eigvals)
 
     gpr.fit(X, y)
-    #print('after fitting')
-    
-    # Generate all possible input points for prediction (across state-action space)
-    #print('length state space',len(state_space))
+
     values = np.linspace(-1, 1, len(state_space))
     all_possible_inputs = np.array(list(product(values, repeat=2)))  # State-action pairs in 2D
 
@@ -171,13 +129,11 @@ def reward_RKHS(P_kernel, state_space, action_space, subdir=None, alpha=0.5):
     all_predictions, _ = gpr.predict(all_possible_inputs, return_std=True)
     y_pred, _ = gpr.predict(X, return_std=True)
     mse = mean_squared_error(y, y_pred)
-    #print('y_pred',y_pred)
     # Scale and normalize the predictions
     min_prediction = np.min(all_predictions)
     max_prediction = np.max(all_predictions)
     scaled_predictions = (all_predictions - min_prediction) / (max_prediction - min_prediction)
     r = scaled_predictions.reshape((len(state_space), len(action_space)))
-    #print('r',r)
 
     return r
 
@@ -274,15 +230,7 @@ def plot_reward_gp_3d(r, state_space, action_space, save_dir=None):
     surf = ax.plot_surface(state_mesh, action_mesh, r, cmap='viridis',vmin=0,vmax=1)
     fig.colorbar(surf, shrink=0.5, aspect=5)
 
-    #     # Scatter plot of predicted rewards
-    # state_indices = np.arange(len(state_space))
-    # action_indices = np.arange(len(action_space))
-    # for state_idx in state_indices:
-    #     for action_idx in action_indices:
-    #         x = state_space[state_idx]
-    #         y = action_space[action_idx]
-    #         z = r[state_idx, action_idx]
-    #         ax.scatter(x, y, z, color='red', s=50)
+
     
     ax.set_xlabel('s',fontsize=20)
     ax.set_ylabel('a',fontsize=20)
@@ -302,9 +250,7 @@ def plot_reward_gp_3d(r, state_space, action_space, save_dir=None):
 
 def plot_transition_probabilities(P, state_space,action_space, save_dir=None):
 
-    # Choose state and action indices
-    # state_indices = [0, 50, 99]  # Indices of states in state_space
-    # action_indices = [0, 50, 99]  # Indices of actions in action_space
+
     
     state_indices = [0, 5, 9]  # Indices of states in state_space
     action_indices = [0, 5, 9]  # Indices of actions in action_space

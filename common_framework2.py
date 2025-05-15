@@ -9,7 +9,6 @@ def save_rewards_and_transitions(P_kernel, alpha, save_dir):
     action_space = np.linspace(-1, 1, num=10).reshape(-1, 1)
     H = 10
     
-    # Create subdirectory for P_kernel if it doesn't exist
     subdir = os.path.join(save_dir, P_kernel)
     os.makedirs(subdir, exist_ok=True)
     
@@ -17,7 +16,6 @@ def save_rewards_and_transitions(P_kernel, alpha, save_dir):
     r = reward_RKHS(P_kernel, state_space, action_space, subdir, alpha)
     optimal_value_function = value_iteration_episodic(state_space, action_space, r, P, H)
     
-    # Save P, r, and optimal_value_function
     np.save(os.path.join(subdir, 'P.npy'), P)
     np.save(os.path.join(subdir, 'r.npy'), r)
     np.save(os.path.join(subdir, 'V.npy'), optimal_value_function)
