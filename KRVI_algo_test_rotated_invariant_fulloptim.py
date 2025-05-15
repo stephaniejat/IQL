@@ -188,10 +188,7 @@ class KRVI:
             episode_rewards = []
 
             initial_state, info = self.env.reset()
-            # print('initial_state',initial_state)
-            #print('self.current_rotation',self.env.current_rotation)
-            #print('self.desc',self.env.desc)
-
+           
             state= preprocess_state(initial_state) 
 
           
@@ -249,71 +246,8 @@ class KRVI:
                 #     writer.writerow([episode, episode_cum_rewards, sum(cumulative_returns)])
 
     
-#     def GP_regression_torch(self, X, y): #I removed normalization
-#         """
-#         Gaussian Process regression using PyTorch.
-        
-#         :param X: Input tensor of shape (n_samples, n_features)
-#         :param y: Target tensor of shape (n_samples,)
-#         :return: Trained GP model
-#         """
-#          # Ensure inputs are torch tensors and use double precision
-#         X = torch.tensor(X, dtype=torch.float32,device=device)
-#         assert not torch.isnan(X).any()
-#         y = torch.tensor(y, dtype=torch.float32,device=device)
-#         assert not torch.isnan(y).any()
 
-#         model = SingleTaskGP(train_X=X,train_Y= y.unsqueeze(-1).to(device), likelihood=GaussianLikelihood(noise_constraint=GreaterThan(1e-4))) #,outcome_transform=Standardize(m=1))  # GP expects (n_samples, 1) for targets
-       
-#         model.covar_module = self.kernel.to(device)
-      
-#         if isinstance(model.covar_module, gpytorch.kernels.RBFKernel):
-#             model.covar_module.lengthscale = torch.tensor(
-#             [self.len_scale], dtype=torch.float32, device=device
-#             )
-        
-#             model.covar_module.raw_lengthscale.requires_grad = True
-#             #print("The covariance module is an RBF kernel.")
-#         else:
-       
-#         # model.covar_module.base_kernel works only for the invariant kernel
-# # Set and freeze the length scale
-#             model.covar_module.base_kernel.lengthscale = torch.tensor(
-#                 [self.len_scale], dtype=torch.float32, device=device
-#             )
-            
-#             model.covar_module.base_kernel.raw_lengthscale.requires_grad = True
-
-#         # Set and freeze the noise
-#         model.likelihood.noise = torch.tensor([self.noise_reg], dtype=torch.float32, device=device) 
-#         model.likelihood.raw_noise.requires_grad = False
-#         if self.optim_botorch == 1:
-#             model.likelihood.raw_noise.requires_grad = True
-
-#             try:
-#                 mll = gpytorch.mlls.ExactMarginalLogLikelihood(model.likelihood, model).to(device)
-
-#                 with gpytorch.settings.cholesky_max_tries(6):
-#                     fit_gpytorch_mll(mll, optimizer_options={"n_restarts": 5, "raw_samples":512})
-#                 del mll
-
-#             except botorch.exceptions.errors.ModelFittingError as e:
-#                 print("Model fitting failed. Printing parameters:")
-#                 for param_name, param in model.named_parameters():
-#                     print(f'Parameter name: {param_name:42} value: {param.item()} requires_grad: {param.requires_grad}')
-#                     # Optionally, print the traceback for debugging
-#                     traceback.print_exc()
-#                     # print('X',X)
-#                     # print('Y',Y)
-            
-#             # **Memory Cleanup**
-#         del X, y  # Safe to delete
-#         torch.cuda.empty_cache()  # Free GPU memory  
-
-       
-#         return model
-
-    def GP_regression_torch(self, X, y): #I removed normalization
+    def GP_regression_torch(self, X, y): 
         """
         Gaussian Process regression using PyTorch.
         
@@ -321,7 +255,6 @@ class KRVI:
         :param y: Target tensor of shape (n_samples,)
         :return: Trained GP model
         """
-         # Ensure inputs are torch tensors and use double precision
         X = torch.tensor(X, dtype=torch.float32,device=device)
         assert not torch.isnan(X).any()
         y = torch.tensor(y, dtype=torch.float32,device=device)

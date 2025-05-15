@@ -81,15 +81,15 @@ def generate_random_map_with_fixed_lakes(size: int = 8, n_hole: int = 1, rotate:
     return desc
 
 
-def construct_90deg_block_rot_groups(dim_space: int):
-    assert dim_space % 2 == 0
-    rotation_matrix = np.array([[0, -1], 
-                            [1, 0]])
+# def construct_90deg_block_rot_groups(dim_space: int):
+#     assert dim_space % 2 == 0
+#     rotation_matrix = np.array([[0, -1], 
+#                             [1, 0]])
 
-    blocks = [rotation_matrix]*int(dim_space / 2)
-    block_diagonal_matrix = block_diag(*blocks)
+#     blocks = [rotation_matrix]*int(dim_space / 2)
+#     block_diagonal_matrix = block_diag(*blocks)
 
-    rot_group_2d = [np.eye(2), rotation_matrix, rotation_matrix @ rotation_matrix,  rotation_matrix @ rotation_matrix @ rotation_matrix] 
-    rot_group_nd = [np.eye(dim_space), block_diagonal_matrix, block_diagonal_matrix @ block_diagonal_matrix, block_diagonal_matrix @ block_diagonal_matrix @ block_diagonal_matrix]
+#     rot_group_2d = [np.eye(2), rotation_matrix, rotation_matrix @ rotation_matrix,  rotation_matrix @ rotation_matrix @ rotation_matrix] 
+#     rot_group_nd = [np.eye(dim_space), block_diagonal_matrix, block_diagonal_matrix @ block_diagonal_matrix, block_diagonal_matrix @ block_diagonal_matrix @ block_diagonal_matrix]
 
-    return GroupRep(rot_group_nd), GroupRep(rot_group_2d)
+#     return GroupRep(rot_group_nd), GroupRep(rot_group_2d)

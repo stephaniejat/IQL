@@ -14,8 +14,7 @@ from gpytorch.mlls import ExactMarginalLogLikelihood
 import torch
 import numpy as np
 from scipy.linalg import block_diag
-#from botorch.models import SingleTaskGP
-#from botorch.fit import fit_gpytorch_mll
+
 
 
 class InvariantKernel(gpytorch.kernels.Kernel):

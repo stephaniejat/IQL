@@ -34,20 +34,7 @@ class FrozenLake2DStateWrapper(gym.ObservationWrapper):
     def _initialize_map(self): #generate a random map where S and G are still restricted to opposite corners, holes position and number are random
         """Generates a new random map and updates attributes."""
        
-        # transform_type = random.choice(["rotate", "reflect_x", "reflect_y"])  # Randomly pick a transformation
-        # transform_value = random.randint(0, 3) if transform_type == "rotate" else None
-    
-        # if transform_type == "rotate":
-        #     print('Rotating by', transform_value * 90, 'degrees')
-        #     self.desc = self.rotate_map(self.original_desc, transform_value)
-        # elif transform_type == "reflect_x":
-        #     print('Reflecting across X-axis')
-        #     self.desc = self.reflect_map_x(self.original_desc)
-        # elif transform_type == "reflect_y":
-        #     print('Reflecting across Y-axis')
-        #     self.desc = self.reflect_map_y(self.original_desc)
 
-        # print('Transformed desc:\n', self.desc)
         transform_idx = random.randint(0, 7)  # 0 to 7 (8 transformations)
 
         if transform_idx < 4:
@@ -140,14 +127,8 @@ if __name__ == "__main__":
 
     # Step 2: Wrap it with FrozenLake2DStateWrapper
     env = FrozenLake2DStateWrapper(base_env, rescale=True)
-    #env = FrozenLake2DStateWrapper(None, rescale=True)  # Start with no env, let wrapper create it
     env.reset()
 
-    # env = gym.make('FrozenLake-v1', map_name='4x4', is_slippery=False)
-    # print(env.unwrapped.desc)
-    # env = FrozenLake2DStateWrapper(env, rescale = True)
-    # env.reset()
-    # print(env.desc)
     for i in range(100):
         action = int(input())
         obs, reward, terminated, truncated, info = env.step(action)

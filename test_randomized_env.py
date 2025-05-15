@@ -13,7 +13,7 @@ from typing import Any, Tuple
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
-from utils import generate_random_map, generate_random_map_with_fixed_lakes  # Ensure this is correctly imported
+from utils import generate_random_map, generate_random_map_with_fixed_lakes  
 
 class FrozenLake2DStateWrapper(gym.ObservationWrapper):
     def __init__(self, env: gym.Env, rescale=False, size=4, p=0.8):
@@ -36,7 +36,6 @@ class FrozenLake2DStateWrapper(gym.ObservationWrapper):
         """Generates a new random map and updates attributes."""
         rotate= random.randint(0, 3)
         # print('rotate',rotate)
-        #self.desc = np.array(generate_random_map(size=self.size, p=self.p, rotate=random.randint(0, 3)), dtype='c')
         self.desc = np.array(generate_random_map_with_fixed_lakes(size=self.size, n_hole=4, rotate=rotate), dtype='c')
         self.grid_size = len(self.desc)
         
@@ -100,13 +99,8 @@ if __name__ == "__main__":
 
     # Step 2: Wrap it with FrozenLake2DStateWrapper
     env = FrozenLake2DStateWrapper(base_env, rescale=True)
-    #env = FrozenLake2DStateWrapper(None, rescale=True)  # Start with no env, let wrapper create it
     env.reset()
 
-    # env = gym.make('FrozenLake-v1', map_name='4x4', is_slippery=False)
-    # print(env.unwrapped.desc)
-    # env = FrozenLake2DStateWrapper(env, rescale = True)
-    # env.reset()
     print(env.desc)
     for i in range(100):
         action = int(input())

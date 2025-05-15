@@ -27,7 +27,6 @@ device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 print('device',device)
 from test_randomized_env import FrozenLake2DStateWrapper
 #from test_rotated_reflected import FrozenLake2DStateWrapper
-#from test_rotated_env import FrozenLake2DStateWrapper
 from invariant_kernel_fixed import InvariantKernel, apply_rotation_group
 import csv
 
@@ -188,9 +187,7 @@ class KRVI:
             episode_rewards = []
 
             initial_state, info = self.env.reset()
-            # print('initial_state',initial_state)
-            #print('self.current_rotation',self.env.current_rotation)
-            #print('self.desc',self.env.desc)
+          
 
             state= preprocess_state(initial_state) 
 
@@ -263,7 +260,6 @@ class KRVI:
         :param y: Target tensor of shape (n_samples,)
         :return: Trained GP model
         """
-         # Ensure inputs are torch tensors and use double precision
         X = torch.tensor(X, dtype=torch.float32,device=device)
         assert not torch.isnan(X).any()
         y = torch.tensor(y, dtype=torch.float32,device=device)
@@ -331,7 +327,6 @@ class KRVI:
 
     def evaluate(self, Qt, action_space, num_episodes=40): #evaluating on 40 different environments
         test_returns = []
-        #test_rewards = []
 
         test_env = FrozenLake2DStateWrapper(gym.make("FrozenLake-v1", is_slippery=False), rescale=True)
 
@@ -354,7 +349,6 @@ class KRVI:
                 next_state, reward, done, truncated, _ = test_env.step(action)
                 next_state = preprocess_state(next_state)
 
-                #episode_reward.append(reward)
                 total_reward += reward
 
                 if done or truncated:
@@ -363,7 +357,6 @@ class KRVI:
                 state = next_state
 
             test_returns.append(total_reward)
-            #test_rewards.append(sum(episode_reward))
 
         return np.mean(test_returns), np.std(test_returns)
 
@@ -381,9 +374,9 @@ if __name__ == "__main__":
     parser.add_argument("--len_scale", type=float, default=0.1, help="Length scale for GP kernel")
     parser.add_argument("--noise_reg", type=float, default=0.1, help="Noise regularization for GP")
     parser.add_argument("--env", type=str, default="FrozenLake-v1", help="Environment name")
-    parser.add_argument("--logging", type=str, default="trial_submission", help="wandb project name") #IQL_project_invariant
+    parser.add_argument("--logging", type=str, default="trial_submission", help="wandb project name") 
     parser.add_argument("--verbose", type=int, default=1, help="Verbosity level (0: silent, 1: info)")
-    parser.add_argument("--iterations", type=int, default=5000, help="Number of training iterations (T)")
+    parser.add_argument("--iterations", type=int, default=2000, help="Number of training iterations (T)")
     parser.add_argument("--seed", type=int, default=0, help="random seed")
     parser.add_argument("--optim_botorch", type= int, default = 1, help ='turn on hyperparm optimization by botorch')
     parser.add_argument("--kernel", type=str, default="invariant_kernel", help="Choose the kernel between invariant kernel and RBF kernel")
