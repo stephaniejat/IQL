@@ -1,0 +1,1 @@
+{"_wandb":{"runtime":4170},"optim_botorch":1,"length_scale":0.1,"UCB coef":0.01,"_timestamp":1.789900456817309e+09,"cumulative_returns":1138,"Episode_Rewards":1,"seed":0,"episode length":100,"kernel":"RBFKernel(\n  (raw_lengthscale_constraint): Positive()\n)","noise_reg":0.1,"_runtime":4170,"_step":1499,"iterations":1500,"Episode_number":1499}

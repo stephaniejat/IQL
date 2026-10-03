@@ -1,0 +1,107 @@
+_wandb:
+    value:
+        cli_version: 0.30.0
+        code_path: code/approximate_invariance_relevance.py
+        e:
+            sbe1nff98kjzmwe6isagxyhgxq0j65h1:
+                apple:
+                    ecpuCores: 4
+                    gpuCores: 10
+                    macModel: Mac14,2
+                    memoryGb: 16
+                    name: Apple M2
+                    pcpuCores: 4
+                    ramTotalBytes: "17179869184"
+                    swapTotalBytes: "8589934592"
+                args:
+                    - --curve
+                    - --H
+                    - "10"
+                    - --T
+                    - "200"
+                    - --seeds
+                    - "5"
+                    - --beta
+                    - "0.1"
+                    - --out
+                    - curve.json
+                    - --wandb_project
+                    - krvi-trials
+                codePath: approximate_invariance_relevance.py
+                codePathLocal: approximate_invariance_relevance.py
+                cpu_count: 8
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "994662584320"
+                        used: "910605074432"
+                email: stephanie.jat.25@ucl.ac.uk
+                executable: /Library/Frameworks/Python.framework/Versions/3.14/bin/python3
+                git:
+                    commit: eb8bdf95a483b5d90828e81b84296352dacaf371
+                    remote: https://github.com/mtkresearch/IQL.git
+                host: Cleopatra.local
+                memory:
+                    total: "17179869184"
+                os: macOS-26.6.2-arm64-arm-64bit-Mach-O
+                program: /Users/stephaniecj/Desktop/UCL/IQL/approximate_invariance_relevance.py
+                python: CPython 3.14.3
+                root: /Users/stephaniecj/Desktop/UCL/IQL
+                startedAt: "2026-09-20T14:12:26.706009Z"
+                writerId: sbe1nff98kjzmwe6isagxyhgxq0j65h1
+        m: []
+        python_version: 3.14.3
+        t:
+            "1":
+                - 1
+            "2":
+                - 1
+            "3":
+                - 2
+                - 3
+                - 13
+                - 16
+                - 61
+                - 62
+            "4": 3.14.3
+            "5": 0.30.0
+            "10":
+                - 20
+            "12": 0.30.0
+            "13": darwin-arm64
+H:
+    value: 10
+T:
+    value: 200
+algorithm:
+    value: repository KRVI
+baseline_symmetry_error:
+    value: 0
+beta:
+    value: 0.1
+environment:
+    value: D4-symmetric deterministic grid
+group:
+    value: repo_D4
+group_is_valid:
+    value: true
+group_max_error:
+    value: 0
+group_order:
+    value: 8
+invariant_length_scale:
+    value: 0.5
+n_fold:
+    value: null
+noise:
+    value: 0.1
+out:
+    value: curve.json
+rbf_length_scale:
+    value: 0.1
+seeds:
+    value: 5
+side:
+    value: 5
+violation_mode:
+    value: curve

@@ -1,0 +1,631 @@
+{
+  "algorithm": "repository KRVI",
+  "environment": "D4-symmetric deterministic grid",
+  "mode": "flip",
+  "H": 10,
+  "T": 20,
+  "beta": 0.1,
+  "noise": 0.1,
+  "length_scales": {
+    "invariant": 0.5,
+    "rbf": 0.1
+  },
+  "baseline_symmetry_error": 0.0,
+  "rows": [
+    {
+      "delta": 0.0,
+      "regret": {
+        "invariant": 0.0,
+        "rbf": 7.625
+      },
+      "regret_se": {
+        "invariant": NaN,
+        "rbf": NaN
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.0
+      },
+      "lml": {
+        "invariant@0.5": -0.06487118452787399,
+        "rbf@0.5": -0.05930584296584129,
+        "invariant@0.1": -0.20063525438308716,
+        "rbf@0.1": -0.07704097032546997
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.0,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.0,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.0,
+          "loss_violated_se": null,
+          "loss_orbit": 0.0,
+          "loss_orbit_se": null,
+          "loss_rest": 0.0,
+          "loss_rest_se": null,
+          "leak_rate": 0.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 1.5,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        },
+        "rbf": {
+          "loss_violated": 0.5,
+          "loss_violated_se": null,
+          "loss_orbit": 0.375,
+          "loss_orbit_se": null,
+          "loss_rest": 6.75,
+          "loss_rest_se": null,
+          "leak_rate": 1.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 0.75,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 0.5,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        }
+      },
+      "lml_ratio": {
+        "0.5": -0.0055653415620327,
+        "0.1": -0.12359428405761719
+      }
+    },
+    {
+      "delta": 0.125,
+      "regret": {
+        "invariant": 0.03125,
+        "rbf": 7.65625
+      },
+      "regret_se": {
+        "invariant": NaN,
+        "rbf": NaN
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.0
+      },
+      "lml": {
+        "invariant@0.5": -0.06487118452787399,
+        "rbf@0.5": -0.05930584296584129,
+        "invariant@0.1": -0.20063525438308716,
+        "rbf@0.1": -0.07704097032546997
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.125,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.25,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.03125,
+          "loss_violated_se": null,
+          "loss_orbit": 0.0,
+          "loss_orbit_se": null,
+          "loss_rest": 0.0,
+          "loss_rest_se": null,
+          "leak_rate": 0.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 1.5,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        },
+        "rbf": {
+          "loss_violated": 0.5,
+          "loss_violated_se": null,
+          "loss_orbit": 0.375,
+          "loss_orbit_se": null,
+          "loss_rest": 6.78125,
+          "loss_rest_se": null,
+          "leak_rate": 1.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 0.75,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 0.5,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        }
+      },
+      "lml_ratio": {
+        "0.5": -0.0055653415620327,
+        "0.1": -0.12359428405761719
+      }
+    },
+    {
+      "delta": 0.25,
+      "regret": {
+        "invariant": 0.0625,
+        "rbf": 7.6875
+      },
+      "regret_se": {
+        "invariant": NaN,
+        "rbf": NaN
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.0
+      },
+      "lml": {
+        "invariant@0.5": -0.06487118452787399,
+        "rbf@0.5": -0.05930584296584129,
+        "invariant@0.1": -0.20063525438308716,
+        "rbf@0.1": -0.07704097032546997
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.25,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.5,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.0625,
+          "loss_violated_se": null,
+          "loss_orbit": 0.0,
+          "loss_orbit_se": null,
+          "loss_rest": 0.0,
+          "loss_rest_se": null,
+          "leak_rate": 0.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 1.5,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        },
+        "rbf": {
+          "loss_violated": 0.5,
+          "loss_violated_se": null,
+          "loss_orbit": 0.375,
+          "loss_orbit_se": null,
+          "loss_rest": 6.8125,
+          "loss_rest_se": null,
+          "leak_rate": 1.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 0.75,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 0.5,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        }
+      },
+      "lml_ratio": {
+        "0.5": -0.0055653415620327,
+        "0.1": -0.12359428405761719
+      }
+    },
+    {
+      "delta": 0.45,
+      "regret": {
+        "invariant": 0.11249999999999982,
+        "rbf": 7.7375
+      },
+      "regret_se": {
+        "invariant": NaN,
+        "rbf": NaN
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.0
+      },
+      "lml": {
+        "invariant@0.5": -0.06487118452787399,
+        "rbf@0.5": -0.05930584296584129,
+        "invariant@0.1": -0.20063525438308716,
+        "rbf@0.1": -0.07704097032546997
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.44999999999999996,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.9,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.11249999999999999,
+          "loss_violated_se": null,
+          "loss_orbit": 0.0,
+          "loss_orbit_se": null,
+          "loss_rest": 0.0,
+          "loss_rest_se": null,
+          "leak_rate": 0.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 1.5,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 6.661338147750939e-16,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        },
+        "rbf": {
+          "loss_violated": 0.5,
+          "loss_violated_se": null,
+          "loss_orbit": 0.3749999999999998,
+          "loss_orbit_se": null,
+          "loss_rest": 6.8625,
+          "loss_rest_se": null,
+          "leak_rate": 1.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 0.75,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 0.5,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        }
+      },
+      "lml_ratio": {
+        "0.5": -0.0055653415620327,
+        "0.1": -0.12359428405761719
+      }
+    },
+    {
+      "delta": 0.55,
+      "regret": {
+        "invariant": 0.31249999999999933,
+        "rbf": 7.937499999999999
+      },
+      "regret_se": {
+        "invariant": NaN,
+        "rbf": NaN
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.0
+      },
+      "lml": {
+        "invariant@0.5": -0.06487118452787399,
+        "rbf@0.5": -0.05930584296584129,
+        "invariant@0.1": -0.20063525438308716,
+        "rbf@0.1": -0.07704097032546997
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.55,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 1.1,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.28749999999999964,
+          "loss_violated_se": null,
+          "loss_orbit": 0.0,
+          "loss_orbit_se": null,
+          "loss_rest": 0.025000000000000133,
+          "loss_rest_se": null,
+          "leak_rate": 0.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 1.5,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 1.1102230246251565e-15,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        },
+        "rbf": {
+          "loss_violated": 0.5250000000000001,
+          "loss_violated_se": null,
+          "loss_orbit": 0.3749999999999998,
+          "loss_orbit_se": null,
+          "loss_rest": 7.037499999999999,
+          "loss_rest_se": null,
+          "leak_rate": 1.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 0.75,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 0.5,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        }
+      },
+      "lml_ratio": {
+        "0.5": -0.0055653415620327,
+        "0.1": -0.12359428405761719
+      }
+    },
+    {
+      "delta": 0.75,
+      "regret": {
+        "invariant": 1.0625,
+        "rbf": 8.6875
+      },
+      "regret_se": {
+        "invariant": NaN,
+        "rbf": NaN
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.0
+      },
+      "lml": {
+        "invariant@0.5": -0.06487118452787399,
+        "rbf@0.5": -0.05930584296584129,
+        "invariant@0.1": -0.20063525438308716,
+        "rbf@0.1": -0.07704097032546997
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.75,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 1.5,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.9375,
+          "loss_violated_se": null,
+          "loss_orbit": 0.0,
+          "loss_orbit_se": null,
+          "loss_rest": 0.125,
+          "loss_rest_se": null,
+          "leak_rate": 0.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 1.5,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        },
+        "rbf": {
+          "loss_violated": 0.625,
+          "loss_violated_se": null,
+          "loss_orbit": 0.375,
+          "loss_orbit_se": null,
+          "loss_rest": 7.6875,
+          "loss_rest_se": null,
+          "leak_rate": 1.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 0.75,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 0.5,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        }
+      },
+      "lml_ratio": {
+        "0.5": -0.0055653415620327,
+        "0.1": -0.12359428405761719
+      }
+    },
+    {
+      "delta": 1.0,
+      "regret": {
+        "invariant": 2.0,
+        "rbf": 9.625
+      },
+      "regret_se": {
+        "invariant": NaN,
+        "rbf": NaN
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.0
+      },
+      "lml": {
+        "invariant@0.5": -0.06487118452787399,
+        "rbf@0.5": -0.05930584296584129,
+        "invariant@0.1": -0.20063525438308716,
+        "rbf@0.1": -0.07704097032546997
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 1.0,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 2.0,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 1.75,
+          "loss_violated_se": null,
+          "loss_orbit": 0.0,
+          "loss_orbit_se": null,
+          "loss_rest": 0.25,
+          "loss_rest_se": null,
+          "leak_rate": 0.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 1.5,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        },
+        "rbf": {
+          "loss_violated": 0.75,
+          "loss_violated_se": null,
+          "loss_orbit": 0.375,
+          "loss_orbit_se": null,
+          "loss_rest": 8.5,
+          "loss_rest_se": null,
+          "leak_rate": 1.0,
+          "leak_rate_se": null,
+          "fix_rate": 0.0,
+          "fix_rate_se": null,
+          "orbit_visits_per_episode": 0.75,
+          "orbit_visits_per_episode_se": null,
+          "violated_visits_per_episode": 0.5,
+          "violated_visits_per_episode_se": null,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": null,
+          "orbit_size": 6.0,
+          "orbit_size_se": null
+        }
+      },
+      "lml_ratio": {
+        "0.5": -0.0055653415620327,
+        "0.1": -0.12359428405761719
+      }
+    }
+  ],
+  "flip": {
+    "cell": [
+      7,
+      3
+    ],
+    "margin": 0.5,
+    "baseline_optimal_action": 2,
+    "predicted_crossing_delta": 0.5,
+    "state_occupancy": 0.38,
+    "occupancy_rank": "high",
+    "sweep": [
+      0.0,
+      0.125,
+      0.25,
+      0.45,
+      0.55,
+      0.75,
+      1.0
+    ]
+  }
+}

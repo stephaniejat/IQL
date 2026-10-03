@@ -1,0 +1,58 @@
+{
+  "os":  "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "python":  "CPython 3.14.3",
+  "startedAt":  "2026-09-21T14:35:20.358487Z",
+  "args":  [
+    "--mode",
+    "flip",
+    "--occupancy_rank",
+    "high",
+    "--H",
+    "10",
+    "--T",
+    "200",
+    "--seeds",
+    "5",
+    "--beta",
+    "0.1",
+    "--out",
+    "flip_high_leak.json",
+    "--wandb_project",
+    "kvri-trials",
+    "--wandb_name",
+    "flip-high-leak"
+  ],
+  "program":  "/Users/stephaniecj/Desktop/UCL/IQL/approximate_invariance_relevance.py",
+  "codePath":  "approximate_invariance_relevance.py",
+  "codePathLocal":  "approximate_invariance_relevance.py",
+  "git":  {
+    "remote":  "https://github.com/mtkresearch/IQL.git",
+    "commit":  "eb8bdf95a483b5d90828e81b84296352dacaf371"
+  },
+  "email":  "stephanie.jat.25@ucl.ac.uk",
+  "root":  "/Users/stephaniecj/Desktop/UCL/IQL",
+  "host":  "Cleopatra.local",
+  "executable":  "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+  "cpu_count":  8,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "994662584320",
+      "used":  "912989970432"
+    }
+  },
+  "memory":  {
+    "total":  "17179869184"
+  },
+  "apple":  {
+    "name":  "Apple M2",
+    "ecpuCores":  4,
+    "pcpuCores":  4,
+    "gpuCores":  10,
+    "memoryGb":  16,
+    "swapTotalBytes":  "9663676416",
+    "ramTotalBytes":  "17179869184",
+    "macModel":  "Mac14,2"
+  },
+  "writerId":  "vjflluhekt137edxzau16uyws3hcb9tm"
+}

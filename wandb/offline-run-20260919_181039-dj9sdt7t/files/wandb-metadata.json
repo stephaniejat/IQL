@@ -1,0 +1,53 @@
+{
+  "os":  "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "python":  "CPython 3.14.3",
+  "startedAt":  "2026-09-19T17:10:39.410336Z",
+  "args":  [
+    "--kernel",
+    "invariant_kernel",
+    "--beta",
+    "0.01",
+    "--len_scale",
+    "0.5",
+    "--noise_reg",
+    "0.1",
+    "--optim_botorch",
+    "1",
+    "--iterations",
+    "1500",
+    "--seed",
+    "0"
+  ],
+  "program":  "/Users/stephaniecj/Desktop/UCL/IQL/KRVI_algo_test_rotated_invariant_fulloptim.py",
+  "codePath":  "KRVI_algo_test_rotated_invariant_fulloptim.py",
+  "codePathLocal":  "KRVI_algo_test_rotated_invariant_fulloptim.py",
+  "git":  {
+    "remote":  "https://github.com/mtkresearch/IQL.git",
+    "commit":  "eb8bdf95a483b5d90828e81b84296352dacaf371"
+  },
+  "root":  "/Users/stephaniecj/Desktop/UCL/IQL",
+  "host":  "Cleopatra.local",
+  "executable":  "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+  "cpu_count":  8,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "994662584320",
+      "used":  "904561324032"
+    }
+  },
+  "memory":  {
+    "total":  "17179869184"
+  },
+  "apple":  {
+    "name":  "Apple M2",
+    "ecpuCores":  4,
+    "pcpuCores":  4,
+    "gpuCores":  10,
+    "memoryGb":  16,
+    "swapTotalBytes":  "4294967296",
+    "ramTotalBytes":  "17179869184",
+    "macModel":  "Mac14,2"
+  },
+  "writerId":  "lhpwo7qdjjnvehx5vtc0f3hqslwjvhn6"
+}

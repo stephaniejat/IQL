@@ -1,0 +1,55 @@
+_wandb:
+    value:
+        cli_version: 0.30.0
+        code_path: code/outputs/wandb_retrospective_upload.py
+        e:
+            an4tgsrgdmggy5d0sk6s5e81z64gag86:
+                codePath: outputs/wandb_retrospective_upload.py
+                codePathLocal: wandb_retrospective_upload.py
+                email: stephanie.jat.25@ucl.ac.uk
+                executable: /Library/Frameworks/Python.framework/Versions/3.14/bin/python3
+                git:
+                    commit: eb8bdf95a483b5d90828e81b84296352dacaf371
+                    remote: https://github.com/mtkresearch/IQL.git
+                host: Cleopatra.local
+                os: macOS-26.6.2-arm64-arm-64bit-Mach-O
+                program: /Users/stephaniecj/Desktop/UCL/IQL/outputs/wandb_retrospective_upload.py
+                python: CPython 3.14.3
+                root: /Users/stephaniecj/Desktop/UCL/IQL/outputs
+                startedAt: "2026-09-20T09:53:28.983667Z"
+                writerId: an4tgsrgdmggy5d0sk6s5e81z64gag86
+        m: []
+        python_version: 3.14.3
+        t:
+            "3":
+                - 2
+                - 3
+                - 13
+                - 15
+                - 16
+            "4": 3.14.3
+            "5": 0.30.0
+            "12": 0.30.0
+            "13": darwin-arm64
+H:
+    value: 10
+T:
+    value: 200
+algorithm:
+    value: repository KRVI
+baseline_symmetry_error:
+    value: 0
+beta:
+    value: 0.1
+environment:
+    value: D4-symmetric deterministic grid
+invariant_length_scale:
+    value: 0.5
+noise:
+    value: 0.1
+rbf_length_scale:
+    value: 0.1
+source:
+    value: baseline.json
+violation_mode:
+    value: oracle

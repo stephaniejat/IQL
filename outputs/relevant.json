@@ -1,0 +1,201 @@
+{
+  "algorithm": "repository KRVI",
+  "environment": "D4-symmetric deterministic grid",
+  "mode": "relevant",
+  "H": 10,
+  "T": 200,
+  "beta": 0.1,
+  "noise": 0.1,
+  "length_scales": {
+    "invariant": 0.5,
+    "rbf": 0.1
+  },
+  "baseline_symmetry_error": 0.0,
+  "rows": [
+    {
+      "delta": 0.0,
+      "regret": {
+        "invariant": 0.07375000000000001,
+        "rbf": 1.83125
+      },
+      "regret_se": {
+        "invariant": 0.07066647012551285,
+        "rbf": 0.13875844568890214
+      },
+      "orbit_gap": {
+        "invariant": 9.5367431640625e-08,
+        "rbf": 0.48186798095703126
+      },
+      "lml": {
+        "invariant@0.5": 0.1972110629081726,
+        "rbf@0.5": 0.15746682286262512,
+        "invariant@0.1": 0.007699044421315193,
+        "rbf@0.1": 0.1138883039355278
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        2,
+        2
+      ],
+      "orbit_partner": [
+        22,
+        0
+      ],
+      "true_reward_gap": 0.0,
+      "lml_ratio": {
+        "0.5": 0.039744240045547496,
+        "0.1": -0.10618925951421261
+      }
+    },
+    {
+      "delta": 0.05,
+      "regret": {
+        "invariant": 0.07225000000000001,
+        "rbf": 1.8987500000000002
+      },
+      "regret_se": {
+        "invariant": 0.06916736947434099,
+        "rbf": 0.07782893902656006
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 0.3706653594970703
+      },
+      "lml": {
+        "invariant@0.5": 0.19708200097084044,
+        "rbf@0.5": 0.15812798142433165,
+        "invariant@0.1": 0.01590465325862169,
+        "rbf@0.1": 0.11457372456789017
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        2,
+        2
+      ],
+      "orbit_partner": [
+        22,
+        0
+      ],
+      "true_reward_gap": 0.05,
+      "lml_ratio": {
+        "0.5": 0.03895401954650879,
+        "0.1": -0.09866907130926847
+      }
+    },
+    {
+      "delta": 0.1,
+      "regret": {
+        "invariant": 0.07325000000000001,
+        "rbf": 1.92775
+      },
+      "regret_se": {
+        "invariant": 0.06767292663983139,
+        "rbf": 0.19046669656399248
+      },
+      "orbit_gap": {
+        "invariant": 2.86102294921875e-07,
+        "rbf": 0.22366275787353515
+      },
+      "lml": {
+        "invariant@0.5": 0.19661883711814881,
+        "rbf@0.5": 0.15856703519821166,
+        "invariant@0.1": -0.03243675380945206,
+        "rbf@0.1": 0.11404997110366821
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        2,
+        2
+      ],
+      "orbit_partner": [
+        22,
+        0
+      ],
+      "true_reward_gap": 0.1,
+      "lml_ratio": {
+        "0.5": 0.03805180191993715,
+        "0.1": -0.14648672491312026
+      }
+    },
+    {
+      "delta": 0.2,
+      "regret": {
+        "invariant": 0.06775,
+        "rbf": 2.0797499999999998
+      },
+      "regret_se": {
+        "invariant": 0.0646703177663447,
+        "rbf": 0.26627212349399254
+      },
+      "orbit_gap": {
+        "invariant": 2.86102294921875e-07,
+        "rbf": 0.40662832260131837
+      },
+      "lml": {
+        "invariant@0.5": 0.1943388968706131,
+        "rbf@0.5": 0.15863073766231536,
+        "invariant@0.1": 0.0034337762743234636,
+        "rbf@0.1": 0.11442176252603531
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        2,
+        2
+      ],
+      "orbit_partner": [
+        22,
+        0
+      ],
+      "true_reward_gap": 0.2,
+      "lml_ratio": {
+        "0.5": 0.03570815920829773,
+        "0.1": -0.11098798625171184
+      }
+    },
+    {
+      "delta": 0.4,
+      "regret": {
+        "invariant": 0.05199999999999999,
+        "rbf": 1.7397500000000001
+      },
+      "regret_se": {
+        "invariant": 0.04893490574222044,
+        "rbf": 0.2622330189926508
+      },
+      "orbit_gap": {
+        "invariant": 6.67572021484375e-07,
+        "rbf": 0.2675625801086426
+      },
+      "lml": {
+        "invariant@0.5": 0.1850285828113556,
+        "rbf@0.5": 0.15841102600097656,
+        "invariant@0.1": 0.007351145893335342,
+        "rbf@0.1": 0.11605841070413589
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        2,
+        2
+      ],
+      "orbit_partner": [
+        22,
+        0
+      ],
+      "true_reward_gap": 0.4,
+      "lml_ratio": {
+        "0.5": 0.02661755681037903,
+        "0.1": -0.10870726481080055
+      }
+    }
+  ]
+}

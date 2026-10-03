@@ -1,0 +1,50 @@
+{
+  "algorithm": "repository KRVI",
+  "environment": "D4-symmetric deterministic grid",
+  "mode": "point",
+  "H": 10,
+  "T": 200,
+  "beta": 0.1,
+  "noise": 0.1,
+  "length_scales": {
+    "invariant": 0.5,
+    "rbf": 0.1
+  },
+  "baseline_symmetry_error": 0.0,
+  "rows": [
+    {
+      "delta": 0.0,
+      "regret": {
+        "invariant": 0.07375000000000001,
+        "rbf": 1.83125
+      },
+      "regret_se": {
+        "invariant": 0.07066647012551285,
+        "rbf": 0.13875844568890214
+      },
+      "orbit_gap": {
+        "invariant": 3.814697265625e-07,
+        "rbf": 1.2718211174011231
+      },
+      "lml": {
+        "invariant@0.5": 0.1972110629081726,
+        "rbf@0.5": 0.15746682286262512,
+        "invariant@0.1": 0.007699044421315193,
+        "rbf@0.1": 0.1138883039355278
+      },
+      "violation_cell": [
+        7,
+        2
+      ],
+      "orbit_partner": [
+        17,
+        0
+      ],
+      "true_reward_gap": 0.0,
+      "lml_ratio": {
+        "0.5": 0.039744240045547496,
+        "0.1": -0.10618925951421261
+      }
+    }
+  ]
+}

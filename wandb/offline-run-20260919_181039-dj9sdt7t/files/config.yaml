@@ -1,0 +1,67 @@
+_wandb:
+    value:
+        cli_version: 0.30.0
+        e:
+            055urc1hnivdbe21gl4k2fjjn0xx3isj:
+                apple:
+                    ecpuCores: 4
+                    gpuCores: 10
+                    macModel: Mac14,2
+                    memoryGb: 16
+                    name: Apple M2
+                    pcpuCores: 4
+                    ramTotalBytes: "17179869184"
+                    swapTotalBytes: "4294967296"
+                args:
+                    - --kernel
+                    - invariant_kernel
+                    - --beta
+                    - "0.01"
+                    - --len_scale
+                    - "0.5"
+                    - --noise_reg
+                    - "0.1"
+                    - --optim_botorch
+                    - "1"
+                    - --iterations
+                    - "1500"
+                    - --seed
+                    - "0"
+                codePath: KRVI_algo_test_rotated_invariant_fulloptim.py
+                codePathLocal: KRVI_algo_test_rotated_invariant_fulloptim.py
+                cpu_count: 8
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "994662584320"
+                        used: "904561324032"
+                executable: /Library/Frameworks/Python.framework/Versions/3.14/bin/python3
+                git:
+                    commit: eb8bdf95a483b5d90828e81b84296352dacaf371
+                    remote: https://github.com/mtkresearch/IQL.git
+                host: Cleopatra.local
+                memory:
+                    total: "17179869184"
+                os: macOS-26.6.2-arm64-arm-64bit-Mach-O
+                program: /Users/stephaniecj/Desktop/UCL/IQL/KRVI_algo_test_rotated_invariant_fulloptim.py
+                python: CPython 3.14.3
+                root: /Users/stephaniecj/Desktop/UCL/IQL
+                startedAt: "2026-09-19T17:10:39.410336Z"
+                writerId: lhpwo7qdjjnvehx5vtc0f3hqslwjvhn6
+        m: []
+        python_version: 3.14.3
+        t:
+            "1":
+                - 1
+            "2":
+                - 1
+            "3":
+                - 4
+                - 76
+                - 62
+            "4": 3.14.3
+            "5": 0.30.0
+            "10":
+                - 20
+            "12": 0.30.0
+            "13": darwin-arm64

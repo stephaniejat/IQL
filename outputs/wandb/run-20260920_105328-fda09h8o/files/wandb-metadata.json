@@ -1,0 +1,17 @@
+{
+  "os":  "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "python":  "CPython 3.14.3",
+  "startedAt":  "2026-09-20T09:53:28.983667Z",
+  "program":  "/Users/stephaniecj/Desktop/UCL/IQL/outputs/wandb_retrospective_upload.py",
+  "codePath":  "outputs/wandb_retrospective_upload.py",
+  "codePathLocal":  "wandb_retrospective_upload.py",
+  "git":  {
+    "remote":  "https://github.com/mtkresearch/IQL.git",
+    "commit":  "eb8bdf95a483b5d90828e81b84296352dacaf371"
+  },
+  "email":  "stephanie.jat.25@ucl.ac.uk",
+  "root":  "/Users/stephaniecj/Desktop/UCL/IQL/outputs",
+  "host":  "Cleopatra.local",
+  "executable":  "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+  "writerId":  "an4tgsrgdmggy5d0sk6s5e81z64gag86"
+}

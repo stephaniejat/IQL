@@ -1,0 +1,631 @@
+{
+  "algorithm": "repository KRVI",
+  "environment": "D4-symmetric deterministic grid",
+  "mode": "flip",
+  "H": 10,
+  "T": 200,
+  "beta": 0.1,
+  "noise": 0.1,
+  "length_scales": {
+    "invariant": 0.5,
+    "rbf": 0.1
+  },
+  "baseline_symmetry_error": 0.0,
+  "rows": [
+    {
+      "delta": 0.0,
+      "regret": {
+        "invariant": 0.07375000000000001,
+        "rbf": 1.83125
+      },
+      "regret_se": {
+        "invariant": 0.07066647012551285,
+        "rbf": 0.13875844568890214
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 2.002716064453125e-06
+      },
+      "lml": {
+        "invariant@0.5": 0.1972110629081726,
+        "rbf@0.5": 0.15746682286262512,
+        "invariant@0.1": 0.007699044421315193,
+        "rbf@0.1": 0.1138883039355278
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.0,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.0,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.015,
+          "loss_violated_se": 0.012119199643540822,
+          "loss_orbit": 0.005,
+          "loss_orbit_se": 0.005,
+          "loss_rest": 0.05375,
+          "loss_rest_se": 0.05374999999999999,
+          "leak_rate": 0.07585592371965785,
+          "leak_rate_se": 0.013305576571331206,
+          "fix_rate": 0.007650825749915739,
+          "fix_rate_se": 0.0060054766000098726,
+          "orbit_visits_per_episode": 1.325,
+          "orbit_visits_per_episode_se": 0.13110110602126893,
+          "violated_visits_per_episode": 3.15,
+          "violated_visits_per_episode_se": 0.1362442659343871,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        },
+        "rbf": {
+          "loss_violated": 0.6,
+          "loss_violated_se": 0.22902647226903708,
+          "loss_orbit": 0.54,
+          "loss_orbit_se": 0.1319564322039665,
+          "loss_rest": 0.69125,
+          "loss_rest_se": 0.15333021962418236,
+          "leak_rate": 0.44215510631522925,
+          "leak_rate_se": 0.06208379004131965,
+          "fix_rate": 0.13354200107009095,
+          "fix_rate_se": 0.05747291239550136,
+          "orbit_visits_per_episode": 2.5,
+          "orbit_visits_per_episode_se": 0.14075688260259248,
+          "violated_visits_per_episode": 1.735,
+          "violated_visits_per_episode_se": 0.16000000000000003,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        }
+      },
+      "lml_ratio": {
+        "0.5": 0.039744240045547496,
+        "0.1": -0.10618925951421261
+      }
+    },
+    {
+      "delta": 0.125,
+      "regret": {
+        "invariant": 0.12874999999999998,
+        "rbf": 1.9181249999999999
+      },
+      "regret_se": {
+        "invariant": 0.07045748939963728,
+        "rbf": 0.1332086005106277
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 2.002716064453125e-06
+      },
+      "lml": {
+        "invariant@0.5": 0.19725153148174285,
+        "rbf@0.5": 0.15802600085735322,
+        "invariant@0.1": -0.004655193164944648,
+        "rbf@0.1": 0.11335047483444213
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.125,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.25,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.06124999999999999,
+          "loss_violated_se": 0.015006509004428709,
+          "loss_orbit": 0.005,
+          "loss_orbit_se": 0.005,
+          "loss_rest": 0.0625,
+          "loss_rest_se": 0.050938458579937416,
+          "leak_rate": 0.03676518883415435,
+          "leak_rate_se": 0.01649364598742445,
+          "fix_rate": 0.013033051819414035,
+          "fix_rate_se": 0.01132054212064981,
+          "orbit_visits_per_episode": 1.225,
+          "orbit_visits_per_episode_se": 0.1089724735885168,
+          "violated_visits_per_episode": 3.25,
+          "violated_visits_per_episode_se": 0.11374313166077325,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        },
+        "rbf": {
+          "loss_violated": 0.58125,
+          "loss_violated_se": 0.17005571237832615,
+          "loss_orbit": 0.6362500000000001,
+          "loss_orbit_se": 0.0877930360991121,
+          "loss_rest": 0.7006249999999999,
+          "loss_rest_se": 0.11145959890247227,
+          "leak_rate": 0.483010027376703,
+          "leak_rate_se": 0.05710058175650531,
+          "fix_rate": 0.1386761261881802,
+          "fix_rate_se": 0.060046960576628644,
+          "orbit_visits_per_episode": 2.5650000000000004,
+          "orbit_visits_per_episode_se": 0.07607562027351471,
+          "violated_visits_per_episode": 1.67,
+          "violated_visits_per_episode_se": 0.08782084035125148,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        }
+      },
+      "lml_ratio": {
+        "0.5": 0.03922553062438963,
+        "0.1": -0.11800566799938678
+      }
+    },
+    {
+      "delta": 0.25,
+      "regret": {
+        "invariant": 0.18625,
+        "rbf": 1.8362499999999997
+      },
+      "regret_se": {
+        "invariant": 0.06966437396546386,
+        "rbf": 0.14699330341889724
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 2.6702880859375e-06
+      },
+      "lml": {
+        "invariant@0.5": 0.19727387726306916,
+        "rbf@0.5": 0.15611907839775085,
+        "invariant@0.1": -0.042604657262563704,
+        "rbf@0.1": 0.1140040710568428
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.25,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.5,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.09375,
+          "loss_violated_se": 0.016177723881930978,
+          "loss_orbit": 0.005,
+          "loss_orbit_se": 0.005,
+          "loss_rest": 0.0875,
+          "loss_rest_se": 0.05011705049182363,
+          "leak_rate": 0.06564474065488264,
+          "leak_rate_se": 0.02264647551574447,
+          "fix_rate": 0.01282051282051282,
+          "fix_rate_se": 0.00949722554194096,
+          "orbit_visits_per_episode": 1.23,
+          "orbit_visits_per_episode_se": 0.11869077470469219,
+          "violated_visits_per_episode": 3.2449999999999997,
+          "violated_visits_per_episode_se": 0.1144006118864755,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        },
+        "rbf": {
+          "loss_violated": 0.53625,
+          "loss_violated_se": 0.20237264513762723,
+          "loss_orbit": 0.6275,
+          "loss_orbit_se": 0.09298857456698645,
+          "loss_rest": 0.6725000000000001,
+          "loss_rest_se": 0.13051281067389514,
+          "leak_rate": 0.4726622602029937,
+          "leak_rate_se": 0.061764346680971804,
+          "fix_rate": 0.1055299539170507,
+          "fix_rate_se": 0.0649932979423377,
+          "orbit_visits_per_episode": 2.645,
+          "orbit_visits_per_episode_se": 0.08993052874302478,
+          "violated_visits_per_episode": 1.6299999999999997,
+          "violated_visits_per_episode_se": 0.11548809462451101,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        }
+      },
+      "lml_ratio": {
+        "0.5": 0.04115479886531831,
+        "0.1": -0.1566087283194065
+      }
+    },
+    {
+      "delta": 0.45,
+      "regret": {
+        "invariant": 0.2784999999999998,
+        "rbf": 2.0917499999999998
+      },
+      "regret_se": {
+        "invariant": 0.0687049852630797,
+        "rbf": 0.07401815655634775
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 1.239776611328125e-06
+      },
+      "lml": {
+        "invariant@0.5": 0.1973549872636795,
+        "rbf@0.5": 0.1569546014070511,
+        "invariant@0.1": -0.021388089656829833,
+        "rbf@0.1": 0.11432893872261048
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.44999999999999996,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.9,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.15175,
+          "loss_violated_se": 0.018146969443959503,
+          "loss_orbit": 0.009999999999999995,
+          "loss_orbit_se": 0.009999999999999995,
+          "loss_rest": 0.11675000000000002,
+          "loss_rest_se": 0.047029910695216066,
+          "leak_rate": 0.08087573942732632,
+          "leak_rate_se": 0.023852659194356512,
+          "fix_rate": 0.00886971908869719,
+          "fix_rate_se": 0.005868041945148255,
+          "orbit_visits_per_episode": 1.27,
+          "orbit_visits_per_episode_se": 0.10470195795685963,
+          "violated_visits_per_episode": 3.2050000000000005,
+          "violated_visits_per_episode_se": 0.10167349703831376,
+          "telescoping_error": 8.881784197001252e-16,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        },
+        "rbf": {
+          "loss_violated": 0.5837499999999999,
+          "loss_violated_se": 0.18938881962776996,
+          "loss_orbit": 0.582,
+          "loss_orbit_se": 0.11349118908532062,
+          "loss_rest": 0.9259999999999999,
+          "loss_rest_se": 0.15954544807044793,
+          "leak_rate": 0.47142998012246035,
+          "leak_rate_se": 0.046633043458706495,
+          "fix_rate": 0.193972323352575,
+          "fix_rate_se": 0.07151685705779429,
+          "orbit_visits_per_episode": 2.365,
+          "orbit_visits_per_episode_se": 0.25575867531718255,
+          "violated_visits_per_episode": 1.7850000000000001,
+          "violated_visits_per_episode_se": 0.2853287577514752,
+          "telescoping_error": 7.105427357601002e-16,
+          "telescoping_error_se": 1.2947314098277873e-16,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        }
+      },
+      "lml_ratio": {
+        "0.5": 0.04040038585662842,
+        "0.1": -0.1357170283794403
+      }
+    },
+    {
+      "delta": 0.55,
+      "regret": {
+        "invariant": 0.4974999999999996,
+        "rbf": 2.1674999999999995
+      },
+      "regret_se": {
+        "invariant": 0.06929669003639352,
+        "rbf": 0.11413191381029235
+      },
+      "orbit_gap": {
+        "invariant": 9.5367431640625e-08,
+        "rbf": 1.33514404296875e-06
+      },
+      "lml": {
+        "invariant@0.5": 0.19735365211963654,
+        "rbf@0.5": 0.15781317353248597,
+        "invariant@0.1": 0.00358346626162529,
+        "rbf@0.1": 0.11368929445743561
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.55,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 1.1,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 0.3127500000000003,
+          "loss_violated_se": 0.019110697266191023,
+          "loss_orbit": 0.010499999999999994,
+          "loss_orbit_se": 0.010499999999999994,
+          "loss_rest": 0.17424999999999988,
+          "loss_rest_se": 0.0569986293694857,
+          "leak_rate": 0.08823701488044848,
+          "leak_rate_se": 0.01953139656944335,
+          "fix_rate": 0.009256476528220231,
+          "fix_rate_se": 0.006131620125472651,
+          "orbit_visits_per_episode": 1.3399999999999999,
+          "orbit_visits_per_episode_se": 0.10204165815979274,
+          "violated_visits_per_episode": 3.1350000000000002,
+          "violated_visits_per_episode_se": 0.094406037942496,
+          "telescoping_error": 1.8207657603852566e-15,
+          "telescoping_error_se": 1.631687946612622e-16,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        },
+        "rbf": {
+          "loss_violated": 0.6202500000000001,
+          "loss_violated_se": 0.2293981255372414,
+          "loss_orbit": 0.5829999999999999,
+          "loss_orbit_se": 0.13052454271132305,
+          "loss_rest": 0.9642499999999998,
+          "loss_rest_se": 0.1673458245669727,
+          "leak_rate": 0.43968653403476055,
+          "leak_rate_se": 0.057306302081894266,
+          "fix_rate": 0.19242229234188826,
+          "fix_rate_se": 0.08336435697372252,
+          "orbit_visits_per_episode": 2.41,
+          "orbit_visits_per_episode_se": 0.28740215726399826,
+          "violated_visits_per_episode": 1.7850000000000001,
+          "violated_visits_per_episode_se": 0.30337682838344787,
+          "telescoping_error": 1.0658141036401502e-15,
+          "telescoping_error_se": 3.538808679539424e-16,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        }
+      },
+      "lml_ratio": {
+        "0.5": 0.03954047858715057,
+        "0.1": -0.11010582819581033
+      }
+    },
+    {
+      "delta": 0.75,
+      "regret": {
+        "invariant": 1.29375,
+        "rbf": 2.995
+      },
+      "regret_se": {
+        "invariant": 0.06826533710456574,
+        "rbf": 0.12775709373651228
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 1.33514404296875e-06
+      },
+      "lml": {
+        "invariant@0.5": 0.19734751284122468,
+        "rbf@0.5": 0.1569728821516037,
+        "invariant@0.1": -0.01173418089747429,
+        "rbf@0.1": 0.11616397947072983
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 0.75,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 1.5,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 1.0062499999999999,
+          "loss_violated_se": 0.025155764746872616,
+          "loss_orbit": 0.00625,
+          "loss_orbit_se": 0.00625,
+          "loss_rest": 0.28125,
+          "loss_rest_se": 0.04307515235028194,
+          "leak_rate": 0.08131064337960889,
+          "leak_rate_se": 0.02726283144783652,
+          "fix_rate": 0.004423923547728981,
+          "fix_rate_se": 0.0029721071720659195,
+          "orbit_visits_per_episode": 1.1949999999999998,
+          "orbit_visits_per_episode_se": 0.07433034373659249,
+          "violated_visits_per_episode": 3.2800000000000002,
+          "violated_visits_per_episode_se": 0.08268917704270615,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        },
+        "rbf": {
+          "loss_violated": 0.8162499999999999,
+          "loss_violated_se": 0.195631988693056,
+          "loss_orbit": 0.65,
+          "loss_orbit_se": 0.13150273286133637,
+          "loss_rest": 1.52875,
+          "loss_rest_se": 0.3085031908262862,
+          "leak_rate": 0.4615067766986001,
+          "leak_rate_se": 0.06928182248683536,
+          "fix_rate": 0.23678321678321676,
+          "fix_rate_se": 0.13551842236079523,
+          "orbit_visits_per_episode": 2.395,
+          "orbit_visits_per_episode_se": 0.2072739732817413,
+          "violated_visits_per_episode": 1.7399999999999998,
+          "violated_visits_per_episode_se": 0.26143832924802746,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        }
+      },
+      "lml_ratio": {
+        "0.5": 0.040374630689620966,
+        "0.1": -0.12789816036820412
+      }
+    },
+    {
+      "delta": 1.0,
+      "regret": {
+        "invariant": 2.26875,
+        "rbf": 3.9137500000000003
+      },
+      "regret_se": {
+        "invariant": 0.07489576089472622,
+        "rbf": 0.1073363580060364
+      },
+      "orbit_gap": {
+        "invariant": 0.0,
+        "rbf": 2.288818359375e-06
+      },
+      "lml": {
+        "invariant@0.5": 0.19734423160552977,
+        "rbf@0.5": 0.1577543020248413,
+        "invariant@0.1": -0.009370387718081474,
+        "rbf@0.1": 0.11573089063167571
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        7,
+        3
+      ],
+      "orbit_partner": [
+        17,
+        1
+      ],
+      "true_reward_gap": 1.0,
+      "flip_margin": 0.5,
+      "flip_state_occupancy": 0.38,
+      "occupancy_rank": "high",
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 2.0,
+      "decomposition": {
+        "invariant": {
+          "loss_violated": 1.795,
+          "loss_violated_se": 0.03177066256784709,
+          "loss_orbit": 0.015,
+          "loss_orbit_se": 0.015,
+          "loss_rest": 0.45875000000000005,
+          "loss_rest_se": 0.06304760106459245,
+          "leak_rate": 0.07103396353771167,
+          "leak_rate_se": 0.02207688627720754,
+          "fix_rate": 0.0073468497928929595,
+          "fix_rate_se": 0.00461249282292437,
+          "orbit_visits_per_episode": 1.2299999999999998,
+          "orbit_visits_per_episode_se": 0.08154753215150044,
+          "violated_visits_per_episode": 3.245,
+          "violated_visits_per_episode_se": 0.08993052874302473,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        },
+        "rbf": {
+          "loss_violated": 1.395,
+          "loss_violated_se": 0.2765467862767528,
+          "loss_orbit": 0.6125,
+          "loss_orbit_se": 0.1501561687044525,
+          "loss_rest": 1.9062500000000004,
+          "loss_rest_se": 0.28444710624297087,
+          "leak_rate": 0.5417363606221748,
+          "leak_rate_se": 0.08807688259163393,
+          "fix_rate": 0.20694001874414245,
+          "fix_rate_se": 0.08484655005387866,
+          "orbit_visits_per_episode": 2.125,
+          "orbit_visits_per_episode_se": 0.2975945227990596,
+          "violated_visits_per_episode": 2.03,
+          "violated_visits_per_episode_se": 0.30076984556301517,
+          "telescoping_error": 0.0,
+          "telescoping_error_se": 0.0,
+          "orbit_size": 6.0,
+          "orbit_size_se": 0.0
+        }
+      },
+      "lml_ratio": {
+        "0.5": 0.039589929580688465,
+        "0.1": -0.12510127834975718
+      }
+    }
+  ],
+  "flip": {
+    "cell": [
+      7,
+      3
+    ],
+    "margin": 0.5,
+    "baseline_optimal_action": 2,
+    "predicted_crossing_delta": 0.5,
+    "state_occupancy": 0.38,
+    "occupancy_rank": "high",
+    "sweep": [
+      0.0,
+      0.125,
+      0.25,
+      0.45,
+      0.55,
+      0.75,
+      1.0
+    ]
+  }
+}

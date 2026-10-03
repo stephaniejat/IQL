@@ -1,0 +1,321 @@
+{
+  "algorithm": "repository KRVI",
+  "environment": "D4-symmetric deterministic grid",
+  "mode": "flip",
+  "H": 10,
+  "T": 200,
+  "beta": 0.1,
+  "noise": 0.1,
+  "length_scales": {
+    "invariant": 0.5,
+    "rbf": 0.1
+  },
+  "baseline_symmetry_error": 0.0,
+  "rows": [
+    {
+      "delta": 0.0,
+      "regret": {
+        "invariant": 0.07375000000000001,
+        "rbf": 1.83125
+      },
+      "regret_se": {
+        "invariant": 0.07066647012551285,
+        "rbf": 0.13875844568890214
+      },
+      "orbit_gap": {
+        "invariant": 1.9073486328125e-07,
+        "rbf": 0.5378472328186035
+      },
+      "lml": {
+        "invariant@0.5": 0.1972110629081726,
+        "rbf@0.5": 0.15746682286262512,
+        "invariant@0.1": 0.007699044421315193,
+        "rbf@0.1": 0.1138883039355278
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        1,
+        3
+      ],
+      "orbit_partner": [
+        23,
+        1
+      ],
+      "true_reward_gap": 0.0,
+      "flip_margin": 0.5,
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.0,
+      "lml_ratio": {
+        "0.5": 0.039744240045547496,
+        "0.1": -0.10618925951421261
+      }
+    },
+    {
+      "delta": 0.125,
+      "regret": {
+        "invariant": 0.148125,
+        "rbf": 1.8975000000000002
+      },
+      "regret_se": {
+        "invariant": 0.14502020333388035,
+        "rbf": 0.14932595952311845
+      },
+      "orbit_gap": {
+        "invariant": 9.5367431640625e-08,
+        "rbf": 0.2854257583618164
+      },
+      "lml": {
+        "invariant@0.5": 0.19684042036533356,
+        "rbf@0.5": 0.1605319559574127,
+        "invariant@0.1": 0.07680986002087593,
+        "rbf@0.1": 0.1135433331131935
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        1,
+        3
+      ],
+      "orbit_partner": [
+        23,
+        1
+      ],
+      "true_reward_gap": 0.125,
+      "flip_margin": 0.5,
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.25,
+      "lml_ratio": {
+        "0.5": 0.03630846440792085,
+        "0.1": -0.03673347309231757
+      }
+    },
+    {
+      "delta": 0.25,
+      "regret": {
+        "invariant": 0.12874999999999998,
+        "rbf": 2.04375
+      },
+      "regret_se": {
+        "invariant": 0.12564831873129062,
+        "rbf": 0.1890870335321806
+      },
+      "orbit_gap": {
+        "invariant": 1.9073486328125e-07,
+        "rbf": 0.3083230972290039
+      },
+      "lml": {
+        "invariant@0.5": 0.19713279008865356,
+        "rbf@0.5": 0.16099741458892822,
+        "invariant@0.1": -0.032203378691338005,
+        "rbf@0.1": 0.11682016998529435
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        1,
+        3
+      ],
+      "orbit_partner": [
+        23,
+        1
+      ],
+      "true_reward_gap": 0.25,
+      "flip_margin": 0.5,
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.5,
+      "lml_ratio": {
+        "0.5": 0.03613537549972534,
+        "0.1": -0.14902354867663237
+      }
+    },
+    {
+      "delta": 0.45,
+      "regret": {
+        "invariant": 0.144,
+        "rbf": 2.0795000000000003
+      },
+      "regret_se": {
+        "invariant": 0.144,
+        "rbf": 0.18847189777258563
+      },
+      "orbit_gap": {
+        "invariant": 1.9073486328125e-07,
+        "rbf": 0.4343440055847168
+      },
+      "lml": {
+        "invariant@0.5": 0.1962096869945526,
+        "rbf@0.5": 0.15921247601509095,
+        "invariant@0.1": 0.05599570274353027,
+        "rbf@0.1": 0.1133330523967743
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 2,
+      "decision_changed": false,
+      "violation_cell": [
+        1,
+        3
+      ],
+      "orbit_partner": [
+        23,
+        1
+      ],
+      "true_reward_gap": 0.45,
+      "flip_margin": 0.5,
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 0.9,
+      "lml_ratio": {
+        "0.5": 0.03699721097946165,
+        "0.1": -0.057337349653244024
+      }
+    },
+    {
+      "delta": 0.55,
+      "regret": {
+        "invariant": 0.05824999999999998,
+        "rbf": 1.79375
+      },
+      "regret_se": {
+        "invariant": 0.05232201974312536,
+        "rbf": 0.18501731337904567
+      },
+      "orbit_gap": {
+        "invariant": 9.5367431640625e-08,
+        "rbf": 0.2785183906555176
+      },
+      "lml": {
+        "invariant@0.5": 0.1966953009366989,
+        "rbf@0.5": 0.15837615728378296,
+        "invariant@0.1": 0.029512549564242364,
+        "rbf@0.1": 0.11357639729976654
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        1,
+        3
+      ],
+      "orbit_partner": [
+        23,
+        1
+      ],
+      "true_reward_gap": 0.55,
+      "flip_margin": 0.5,
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 1.1,
+      "lml_ratio": {
+        "0.5": 0.038319143652915943,
+        "0.1": -0.08406384773552418
+      }
+    },
+    {
+      "delta": 0.75,
+      "regret": {
+        "invariant": 0.08374999999999999,
+        "rbf": 1.8350000000000002
+      },
+      "regret_se": {
+        "invariant": 0.05140981180669697,
+        "rbf": 0.18928937833380927
+      },
+      "orbit_gap": {
+        "invariant": 9.5367431640625e-08,
+        "rbf": 0.6112412452697754
+      },
+      "lml": {
+        "invariant@0.5": 0.19057053029537202,
+        "rbf@0.5": 0.1569740206003189,
+        "invariant@0.1": -0.0028455138206481935,
+        "rbf@0.1": 0.11459350734949111
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        1,
+        3
+      ],
+      "orbit_partner": [
+        23,
+        1
+      ],
+      "true_reward_gap": 0.75,
+      "flip_margin": 0.5,
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 1.5,
+      "lml_ratio": {
+        "0.5": 0.03359650969505312,
+        "0.1": -0.11743902117013931
+      }
+    },
+    {
+      "delta": 1.0,
+      "regret": {
+        "invariant": 0.06,
+        "rbf": 1.6150000000000002
+      },
+      "regret_se": {
+        "invariant": 0.01,
+        "rbf": 0.11049604065304784
+      },
+      "orbit_gap": {
+        "invariant": 9.5367431640625e-08,
+        "rbf": 0.5296525955200195
+      },
+      "lml": {
+        "invariant@0.5": 0.18256900310516358,
+        "rbf@0.5": 0.15334110856056213,
+        "invariant@0.1": -0.046148899383842944,
+        "rbf@0.1": 0.11731400191783906
+      },
+      "optimal_action_before": 2,
+      "optimal_action_after": 3,
+      "decision_changed": true,
+      "violation_cell": [
+        1,
+        3
+      ],
+      "orbit_partner": [
+        23,
+        1
+      ],
+      "true_reward_gap": 1.0,
+      "flip_margin": 0.5,
+      "flip_baseline_optimal_action": 2,
+      "flip_predicted_crossing_delta": 0.5,
+      "flip_relative_to_margin": 2.0,
+      "lml_ratio": {
+        "0.5": 0.02922789454460145,
+        "0.1": -0.163462901301682
+      }
+    }
+  ],
+  "flip": {
+    "cell": [
+      1,
+      3
+    ],
+    "margin": 0.5,
+    "baseline_optimal_action": 2,
+    "predicted_crossing_delta": 0.5,
+    "sweep": [
+      0.0,
+      0.125,
+      0.25,
+      0.45,
+      0.55,
+      0.75,
+      1.0
+    ]
+  }
+}

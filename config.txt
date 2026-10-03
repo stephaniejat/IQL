@@ -1,0 +1,9 @@
+beta=0.01
+len_scale=0.1
+noise_reg=0.1
+horizon=100
+seed=0
+optim_botorch=1
+kernel=RBFKernel(
+  (raw_lengthscale_constraint): Positive()
+)
